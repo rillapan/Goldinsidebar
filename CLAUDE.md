@@ -107,3 +107,21 @@ AI engine: `TWELVE_DATA_API_KEY`, `REDIS_URL`, `CLAUDE_API_KEY`, `CLAUDE_MODEL`,
 Frontend: `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_WS_URL` (both default to `http://localhost:5000`).
 
 `INTERNAL_API_KEY` and `CLAUDE_API_KEY`/`CLAUDE_MODEL` must match between backend and ai-engine.
+
+## Skill routing
+
+When the user's request matches an available skill, invoke it via the Skill tool. When in doubt, invoke the skill.
+
+Key routing rules:
+- Product ideas/brainstorming → invoke /office-hours
+- Strategy/scope → invoke /plan-ceo-review
+- Architecture → invoke /plan-eng-review
+- Design system/plan review → invoke /design-consultation or /plan-design-review
+- Full review pipeline → invoke /autoplan
+- Bugs/errors → invoke /investigate
+- QA/testing site behavior → invoke /qa or /qa-only
+- Code review/diff check → invoke /review
+- Visual polish → invoke /design-review
+- Ship/deploy/PR → invoke /ship or /land-and-deploy
+- Save progress → invoke /context-save
+- Resume context → invoke /context-restore
