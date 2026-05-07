@@ -1,0 +1,18 @@
+{
+  "name": "goldmind-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GoldMind AI — SaaS Trading Signal & Membership Platform",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:ai": "cd ai-engine && python -m uvicorn main:app --reload --port 8000",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../ai-engine && pip install -r requirements.txt"
+  },
+  "keywords": ["goldmind", "trading", "ai", "xauusd"],
+  "license": "UNLICENSED"
+
+  
+}
+
+

@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 40 30% 95%;
+    --card: 222 30% 10%;
+    --card-foreground: 40 30% 95%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 222 47% 6%;
+    --secondary: 222 20% 18%;
+    --secondary-foreground: 40 30% 95%;
+    --muted: 222 20% 18%;
+    --muted-foreground: 222 10% 55%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 222 47% 6%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 40 30% 95%;
+    --border: 222 20% 18%;
+    --input: 222 20% 18%;
+    --ring: 38 92% 50%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-brand-border;
+  }
+
+  body {
+    @apply bg-brand-dark text-gray-100 font-sans antialiased;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0a0e17;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4b5563;
+  }
+}
+
+@layer components {
+  /* Glass card effect */
+  .glass-card {
+    @apply bg-brand-card/80 backdrop-blur-md border border-brand-border rounded-xl;
+  }
+
+  /* Gold gradient text */
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-gold;
+  }
+
+  /* Signal badges */
+  .badge-buy {
+    @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-bold tracking-wide;
+  }
+  .badge-sell {
+    @apply bg-red-500/20 text-red-400 border border-red-500/30 px-3 py-1 rounded-full text-xs font-bold tracking-wide;
+  }
+  .badge-wait {
+    @apply bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-1 rounded-full text-xs font-bold tracking-wide;
+  }
+
+  /* Glow button */
+  .btn-gold {
+    @apply bg-gradient-gold text-brand-dark font-bold px-6 py-3 rounded-lg
+    hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] transition-all duration-300
+    active:scale-95;
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply glass-card p-5 flex flex-col gap-1.5 hover:border-brand-accent/30 transition-all duration-300;
+  }
+
+  /* Line clamp utility */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
