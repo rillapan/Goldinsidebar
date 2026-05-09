@@ -102,6 +102,32 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
 }
 
 /**
+ * Buat satu kali pakai invite link ke Telegram channel.
+ * Expire dalam 48 jam, hanya bisa dipakai 1 member.
+ * Return URL string jika berhasil, null jika gagal.
+ */
+async function createTelegramInviteLink(): Promise<string | null> {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHANNEL_ID) {
+    console.warn('⚠️ [TELEGRAM] Token atau Channel ID tidak dikonfigurasi — skip invite link');
+    return null;
+  }
+  try {
+    const expireDate = Math.floor(Date.now() / 1000) + 172800; // 48 jam dari sekarang
+    const resp = await axios.post(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/createChatInviteLink`,
+      { chat_id: TELEGRAM_CHANNEL_ID, member_limit: 1, expire_date: expireDate },
+      { timeout: 10000 }
+    );
+    const link: string = resp.data?.result?.invite_link;
+    if (!link) throw new Error('invite_link kosong dari response Telegram');
+    return link;
+  } catch (err: any) {
+    console.error('❌ [TELEGRAM] Gagal buat invite link:', err.response?.data?.description || err.message);
+    return null;
+  }
+}
+
+/**
  * Kirim pesan ke channel/grup Telegram via Bot API.
  * Gunakan parse_mode HTML untuk formatting (bold, italic, code).
  */
@@ -146,11 +172,27 @@ export async function sendActivationNotification(user: {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
 
+  // Buat Telegram invite link sebelum kirim notifikasi.
+  // Jika gagal (bot bukan admin, API down, dsb) gunakan fallback teks.
+  const telegramInviteLink = await createTelegramInviteLink();
+  const telegramSection = telegramInviteLink
+    ? `📲 *Bergabung ke channel Telegram privat:*\n${telegramInviteLink}\n_(Link berlaku 48 jam)_`
+    : `📲 Untuk akses channel Telegram, hubungi admin: @goldmindai_admin`;
+
+  const telegramSectionHtml = telegramInviteLink
+    ? `<div style="background:#111827;border:1px solid #1f2937;border-radius:8px;padding:20px;margin:16px 0;">
+        <p style="margin:0;color:#9ca3af;font-size:14px;">Channel Telegram Privat</p>
+        <a href="${telegramInviteLink}" style="display:inline-block;margin-top:8px;color:#f59e0b;font-weight:700;word-break:break-all;">${telegramInviteLink}</a>
+        <p style="margin:8px 0 0;color:#6b7280;font-size:12px;">⏳ Link berlaku 48 jam. Klik sebelum kedaluwarsa.</p>
+      </div>`
+    : `<p style="color:#d1d5db;">📲 Untuk akses channel Telegram, hubungi admin: <strong>@goldmindai_admin</strong></p>`;
+
   // Pesan WhatsApp
   const waMessage =
     `✅ *Selamat, ${user.name}!*\n\n` +
     `Pembayaran berhasil dikonfirmasi. Membership GoldMind AI Anda kini *AKTIF*.\n\n` +
     `📅 Masa aktif hingga: *${endDateStr}*\n\n` +
+    `${telegramSection}\n\n` +
     `🚀 Akses dashboard Anda di:\n${FRONTEND_URL}/dashboard\n\n` +
     `_Terima kasih telah bergabung! — GoldMind AI Team_`;
 
@@ -168,6 +210,7 @@ export async function sendActivationNotification(user: {
         <p style="margin:0;color:#9ca3af;font-size:14px;">Masa aktif hingga</p>
         <p style="margin:6px 0 0;font-size:22px;font-weight:700;color:#f59e0b;">${endDateStr}</p>
       </div>
+      ${telegramSectionHtml}
       <p style="color:#d1d5db;">Yang bisa Anda akses sekarang:</p>
       <ul style="color:#d1d5db;line-height:2;">
         <li>⚡ AI Signal Engine — sinyal BUY/SELL real-time 24/5</li>

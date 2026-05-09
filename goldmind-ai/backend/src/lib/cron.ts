@@ -6,11 +6,13 @@
 // Job 2: Cek membership expired — setiap jam
 // Job 3: Reminder H-7 — setiap hari 09:00 WIB (4–7 hari sebelum expired)
 // Job 4: Reminder H-3 urgent — setiap hari 09:00 WIB (1–3 hari sebelum expired)
+// Job 5: Signal outcome monitor — setiap 5 menit, update ACTIVE signal jika SL/TP tercapai
 // ═══════════════════════════════════════════════════════════
 
 import cron from 'node-cron';
 import axios from 'axios';
 import { prisma } from './prisma';
+import { redis } from './redis';
 import { sendRenewalReminder } from './notifications';
 
 const AI_ENGINE_URL = process.env.AI_ENGINE_URL || 'http://localhost:8000';
@@ -165,5 +167,75 @@ export function setupCronJobs(): void {
     }
   }, { timezone: 'Asia/Jakarta' });
 
-  console.log('⏰ Cron jobs dikonfigurasi: DailyBias (07:00), ExpiryCheck (tiap jam), H-7 (09:00), H-3 (09:30)');
+  // ── 5. Signal Outcome Monitor — setiap 5 menit ──────────
+  // Bandingkan harga XAUUSD saat ini dari Redis dengan SL/TP tiap sinyal ACTIVE.
+  // Update status ke TP_HIT atau SL_HIT jika level tercapai.
+  // Skip satu siklus jika price feed stale (>120 detik atau tidak ada data).
+
+  cron.schedule('*/5 * * * *', async () => {
+    try {
+      const raw = await redis.get('price:xauusd');
+      if (!raw) {
+        console.warn('⚠️ [CRON/OUTCOME] price:xauusd tidak ada di Redis — skip siklus');
+        return;
+      }
+
+      const priceData = JSON.parse(raw) as { price: number; timestamp: string };
+      const ageSeconds = (Date.now() - new Date(priceData.timestamp).getTime()) / 1000;
+      if (ageSeconds > 120) {
+        console.warn(`⚠️ [CRON/OUTCOME] price feed stale (${Math.round(ageSeconds)}s) — skip siklus`);
+        return;
+      }
+
+      const currentPrice = priceData.price;
+
+      const activeSignals = await prisma.signal.findMany({
+        where: { status: 'ACTIVE' },
+        select: { id: true, type: true, entryPrice: true, stopLoss: true, takeProfit: true },
+      });
+
+      if (activeSignals.length === 0) return;
+
+      const now = new Date();
+      let closedCount = 0;
+
+      for (const signal of activeSignals) {
+        let newStatus: 'TP_HIT' | 'SL_HIT' | null = null;
+
+        if (signal.type === 'BUY') {
+          if (currentPrice >= signal.takeProfit) newStatus = 'TP_HIT';
+          else if (currentPrice <= signal.stopLoss) newStatus = 'SL_HIT';
+        } else if (signal.type === 'SELL') {
+          if (currentPrice <= signal.takeProfit) newStatus = 'TP_HIT';
+          else if (currentPrice >= signal.stopLoss) newStatus = 'SL_HIT';
+        }
+
+        if (!newStatus) continue;
+
+        const pnlPips = Math.abs(currentPrice - signal.entryPrice) / 0.01;
+        const signedPnl = newStatus === 'TP_HIT' ? pnlPips : -pnlPips;
+
+        await prisma.signal.update({
+          where: { id: signal.id },
+          data: {
+            status: newStatus,
+            exitPrice: currentPrice,
+            pnlPips: signedPnl,
+            closedAt: now,
+          },
+        });
+
+        console.log(`📊 [CRON/OUTCOME] Signal ${signal.id} → ${newStatus} @ ${currentPrice.toFixed(2)} (${signedPnl.toFixed(1)} pips)`);
+        closedCount++;
+      }
+
+      if (closedCount > 0) {
+        console.log(`✅ [CRON/OUTCOME] ${closedCount} sinyal ditutup dari ${activeSignals.length} aktif`);
+      }
+    } catch (error: any) {
+      console.error('❌ [CRON/OUTCOME] Signal outcome monitor error:', error.message);
+    }
+  });
+
+  console.log('⏰ Cron jobs dikonfigurasi: DailyBias (07:00), ExpiryCheck (tiap jam), H-7 (09:00), H-3 (09:30), OutcomeMonitor (*/5)');
 }

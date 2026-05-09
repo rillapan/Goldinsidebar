@@ -1,5 +1,18 @@
 import type { Metadata } from 'next';
+import { Inter, Syne } from 'next/font/google';
 import './globals.css';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const syne = Syne({
+  subsets: ['latin'],
+  variable: '--font-syne',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'GoldMind AI — AI Trading Signal XAUUSD',
@@ -20,11 +33,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className="dark">
+    <html lang="id" className={`dark ${inter.variable} ${syne.variable}`}>
       <head>
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className="min-h-screen bg-brand-dark">
+      <body className="min-h-screen bg-brand-dark font-sans">
         {children}
       </body>
     </html>

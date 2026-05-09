@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(export PATH=\"$HOME/.bun/bin:$PATH\")",
+      "Read(//c/Users/USER/.claude/skills/gstack/**)",
+      "Bash(./setup)",
+      "Bash(python3 -m json.tool)",
+      "Read(//c/Users/USER/.claude/**)",
+      "PowerShell(Get-Command *)",
+      "Skill(plan-ceo-review)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"Exit code: $?\")",
+      "Skill(plan-design-review)"
+    ]
+  }
+}
