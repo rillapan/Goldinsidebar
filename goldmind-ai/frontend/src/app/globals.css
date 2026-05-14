@@ -34,11 +34,14 @@
   }
 
   /* ── Light mode tokens ───────────────────────────────── */
+  /* Aligned to tema tampilan.md: High Clarity palette     */
   html.light {
-    --brand-dark:   248 250 252;
-    --brand-darker: 241 245 249;
-    --brand-card:   255 255 255;
+    --brand-dark:   248 249 250;   /* #F8F9FA Soft Grey/White */
+    --brand-darker: 241 243 245;
+    --brand-card:   255 255 255;   /* #FFFFFF Pure White */
     --brand-border: 226 232 240;
+
+    --equity-line-color: #1848CC;  /* Royal Blue — equity curve */
 
     color-scheme: light;
   }

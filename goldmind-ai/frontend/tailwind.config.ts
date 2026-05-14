@@ -27,9 +27,9 @@ const config: Config = {
           darker: 'rgb(var(--brand-darker) / <alpha-value>)',
           card: 'rgb(var(--brand-card) / <alpha-value>)',
           border: 'rgb(var(--brand-border) / <alpha-value>)',
-          accent: '#f59e0b',
-          success: '#10b981',
-          danger: '#ef4444',
+          accent: '#F0B90B',   /* spec: Gold #F0B90B */
+          success: '#0ECB81',  /* spec: Emerald Green */
+          danger: '#F6465D',   /* spec: Rose Red */
           info: '#3b82f6',
         },
       },
@@ -64,7 +64,7 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-gold': 'linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%)',
+        'gradient-gold': 'linear-gradient(135deg, #F0B90B 0%, #C99400 50%, #a07800 100%)',
         'gradient-dark': 'linear-gradient(180deg, #0a0e17 0%, #111827 100%)',
       },
     },
