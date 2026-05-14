@@ -4,11 +4,14 @@
 
 @layer base {
   /* ── Brand color tokens (dark mode default) ─────────── */
+  /* Aligned to tema tampilan.md: OLED Night Mode palette  */
   :root, html.dark {
-    --brand-dark:   10 14 23;
-    --brand-darker: 6 9 17;
-    --brand-card:   17 24 39;
-    --brand-border: 31 41 55;
+    --brand-dark:   11 14 17;    /* #0B0E11 Deep Charcoal */
+    --brand-darker: 8 10 13;     /* #080A0D sub-surface */
+    --brand-card:   21 25 33;    /* #151921 Dark Navy */
+    --brand-border: 30 36 50;    /* card-adjacent border */
+
+    --equity-line-color: #2962FF;   /* Vivid Blue — equity curve */
 
     --background: 222 47% 6%;
     --foreground: 40 30% 95%;
