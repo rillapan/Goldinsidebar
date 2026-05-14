@@ -61,20 +61,19 @@ function EquityCurve({ entries }: { entries: JournalEntry[] }) {
   const pathD = points.map((v, i) => `${i === 0 ? 'M' : 'L'} ${px(i).toFixed(1)} ${py(v).toFixed(1)}`).join(' ');
   const fillD = `${pathD} L ${px(points.length - 1).toFixed(1)} ${H} L ${px(0).toFixed(1)} ${H} Z`;
 
-  const isProfit = points[points.length - 1] >= 0;
-  const lineColor = isProfit ? '#10b981' : '#ef4444';
-  const fillStart = isProfit ? '#10b98140' : '#ef444440';
+  // Per spec: equity curve always Vivid Blue — color conveys ownership, not P&L
+  // Dark: #2962FF, Light: #1848CC — controlled via CSS variable --equity-line-color
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-36" preserveAspectRatio="none">
       <defs>
         <linearGradient id="eq-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={fillStart} />
-          <stop offset="100%" stopColor="transparent" />
+          <stop offset="0%" stopColor="var(--equity-line-color)" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="var(--equity-line-color)" stopOpacity="0" />
         </linearGradient>
       </defs>
       <path d={fillD} fill="url(#eq-fill)" />
-      <path d={pathD} fill="none" stroke={lineColor} strokeWidth="2" strokeLinejoin="round" />
+      <path d={pathD} fill="none" stroke="var(--equity-line-color)" strokeWidth="2" strokeLinejoin="round" />
       {/* Zero line */}
       <line
         x1={PAD} y1={py(0).toFixed(1)}
