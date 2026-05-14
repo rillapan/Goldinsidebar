@@ -249,8 +249,10 @@ export async function sendSignalNotification(signal: {
   reasoning: string;
 }): Promise<void> {
   const dirEmoji = signal.type === 'BUY' ? '🟢' : '🔴';
-  const rr = Math.abs(signal.takeProfit - signal.entryPrice) /
-             Math.abs(signal.entryPrice - signal.stopLoss);
+  const slDist = Math.abs(signal.entryPrice - signal.stopLoss);
+  const rr = slDist > 0
+    ? Math.abs(signal.takeProfit - signal.entryPrice) / slDist
+    : 0;
 
   const telegramMsg =
     `${dirEmoji} <b>SINYAL ${signal.type} — XAUUSD</b>\n\n` +

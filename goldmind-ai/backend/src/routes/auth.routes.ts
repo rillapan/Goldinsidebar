@@ -110,4 +110,51 @@ router.get('/me', verifyToken, async (req: Request, res: Response, next: NextFun
   }
 });
 
+// ─── PATCH /api/auth/me ─────────────────────────────────
+// Update profil user: nama dan/atau nomor WhatsApp.
+// Tidak memerlukan membership aktif — semua authenticated user bisa update.
+
+router.patch('/me', verifyToken, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.userId;
+    const { name, phone } = req.body;
+
+    if (name !== undefined) {
+      if (typeof name !== 'string' || name.trim().length < 2) {
+        res.status(400).json({ success: false, error: 'NAME_TOO_SHORT' });
+        return;
+      }
+    }
+    if (phone !== undefined && phone !== '') {
+      const clean = phone.trim();
+      if (!/^(08|628)\d{8,11}$/.test(clean)) {
+        res.status(400).json({ success: false, error: 'PHONE_INVALID' });
+        return;
+      }
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(name !== undefined && { name: name.trim() }),
+        ...(phone !== undefined && { phone: phone.trim() }),
+      },
+      select: {
+        id: true, name: true, phone: true, email: true, role: true, status: true,
+        memberships: {
+          where: { isActive: true },
+          orderBy: { endDate: 'desc' },
+          take: 1,
+          select: { startDate: true, endDate: true, isActive: true },
+        },
+      },
+    });
+
+    const activeMembership = updated.memberships[0] || null;
+    res.json({ success: true, user: { ...updated, activeMembership } });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

@@ -2,6 +2,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { verifyToken, requireAdmin } from '../middleware/auth.middleware';
+import { sendTelegram, sendSignalNotification } from '../lib/notifications';
 
 const router = Router();
 router.use(verifyToken, requireAdmin);
@@ -66,6 +67,34 @@ router.post('/bias/:id/publish', async (req: Request, res: Response, next: NextF
       data: { isPublished: true, publishedAt: new Date() },
     });
     res.json({ success: true, data: bias });
+  } catch (error) { next(error); }
+});
+
+// POST /api/admin/test-telegram — Kirim test message ke Telegram channel
+router.post('/test-telegram', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const ok = await sendTelegram('🔔 <b>TEST</b> — Koneksi Telegram SINYAL COHIBA berhasil!');
+    if (!ok) {
+      res.status(500).json({ success: false, message: 'Telegram gagal — cek TELEGRAM_BOT_TOKEN dan TELEGRAM_CHANNEL_ID di .env' });
+      return;
+    }
+    res.json({ success: true, message: 'Pesan test berhasil dikirim ke Telegram.' });
+  } catch (error) { next(error); }
+});
+
+// POST /api/admin/test-signal-telegram — Kirim simulasi sinyal ke Telegram
+router.post('/test-signal-telegram', async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    await sendSignalNotification({
+      type: 'BUY',
+      entryPrice: 3320.50,
+      stopLoss: 3310.00,
+      takeProfit: 3341.00,
+      confidence: 78,
+      timeframe: 'M15',
+      reasoning: '[TEST] Harga rebound dari support 3318, RSI oversold, momentum bullish.',
+    });
+    res.json({ success: true, message: 'Simulasi sinyal BUY dikirim ke Telegram.' });
   } catch (error) { next(error); }
 });
 

@@ -115,10 +115,21 @@ function JournalContent() {
   const [submitting, setSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState('');
+  const [currency, setCurrency] = useState<'USD' | 'IDR' | 'BOTH'>('BOTH');
+
+  useEffect(() => {
+    const stored = localStorage.getItem('gm_currency') as 'USD' | 'IDR' | 'BOTH' | null;
+    if (stored) setCurrency(stored);
+    const handler = (e: StorageEvent) => {
+      if (e.key === 'gm_currency' && e.newValue) setCurrency(e.newValue as 'USD' | 'IDR' | 'BOTH');
+    };
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
 
   // Form state — pre-filled from query params when coming from signals page
   const [form, setForm] = useState({
-    lotSize: '',
+    lotSize: (typeof window !== 'undefined' ? localStorage.getItem('gm_default_lot') : null) ?? '',
     entryPrice: searchParams.get('entry') ?? '',
     takeProfit: searchParams.get('tp') ?? '',
     stopLoss: searchParams.get('sl') ?? '',
@@ -163,7 +174,7 @@ function JournalContent() {
         notes: form.notes || null,
         tradeDate: form.tradeDate,
       });
-      setForm({ lotSize: '', entryPrice: '', takeProfit: '', stopLoss: '', result: 'WIN', notes: '', tradeDate: new Date().toISOString().slice(0, 10) });
+      setForm({ lotSize: localStorage.getItem('gm_default_lot') ?? '', entryPrice: '', takeProfit: '', stopLoss: '', result: 'WIN', notes: '', tradeDate: new Date().toISOString().slice(0, 10) });
       setShowForm(false);
       fetchEntries();
     } catch (err: any) {
@@ -318,11 +329,13 @@ function JournalContent() {
                     <span className="flex items-center gap-2">
                       <span className="text-gray-500">Estimasi P&L:</span>
                       <span className={`font-mono font-bold ${pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                        {formatUSD(pnl)}
+                        {currency === 'IDR' ? formatIDR(pnl) : formatUSD(pnl)}
                       </span>
-                      <span className={`text-xs ${pnl >= 0 ? 'text-emerald-400/60' : 'text-red-400/60'}`}>
-                        ({formatIDR(pnl)})
-                      </span>
+                      {currency === 'BOTH' && (
+                        <span className={`text-xs ${pnl >= 0 ? 'text-emerald-400/60' : 'text-red-400/60'}`}>
+                          ({formatIDR(pnl)})
+                        </span>
+                      )}
                     </span>
                   );
                 })()}
@@ -394,11 +407,13 @@ function JournalContent() {
         <div className="glass-card p-4">
           <p className="text-xs text-gray-500 mb-1">Total P/L</p>
           <p className={`text-lg font-bold font-mono ${stats.totalPnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-            {formatUSD(stats.totalPnl)}
+            {currency === 'IDR' ? formatIDR(stats.totalPnl) : formatUSD(stats.totalPnl)}
           </p>
-          <p className={`text-xs mt-0.5 ${stats.totalPnl >= 0 ? 'text-emerald-400/60' : 'text-red-400/60'}`}>
-            {stats.totalPnl !== 0 ? formatIDR(stats.totalPnl) : 'Rp 0'}
-          </p>
+          {currency === 'BOTH' && (
+            <p className={`text-xs mt-0.5 ${stats.totalPnl >= 0 ? 'text-emerald-400/60' : 'text-red-400/60'}`}>
+              {stats.totalPnl !== 0 ? formatIDR(stats.totalPnl) : 'Rp 0'}
+            </p>
+          )}
         </div>
 
         <div className="glass-card p-4">
