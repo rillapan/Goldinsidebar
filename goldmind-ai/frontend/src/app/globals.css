@@ -3,7 +3,13 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  /* ── Brand color tokens (dark mode default) ─────────── */
+  :root, html.dark {
+    --brand-dark:   10 14 23;
+    --brand-darker: 6 9 17;
+    --brand-card:   17 24 39;
+    --brand-border: 31 41 55;
+
     --background: 222 47% 6%;
     --foreground: 40 30% 95%;
     --card: 222 30% 10%;
@@ -24,6 +30,16 @@
     --radius: 0.75rem;
   }
 
+  /* ── Light mode tokens ───────────────────────────────── */
+  html.light {
+    --brand-dark:   248 250 252;
+    --brand-darker: 241 245 249;
+    --brand-card:   255 255 255;
+    --brand-border: 226 232 240;
+
+    color-scheme: light;
+  }
+
   * {
     @apply border-brand-border;
   }
@@ -32,20 +48,31 @@
     @apply bg-brand-dark text-gray-100 font-sans antialiased;
   }
 
+  /* ── Light mode text overrides ───────────────────────── */
+  /* Tailwind gray utilities are hardcoded hex, so we override them here */
+  html.light body                    { color: #1e293b; }
+  html.light .text-white             { color: #0f172a; }
+  html.light .text-gray-100          { color: #1e293b; }
+  html.light .text-gray-300          { color: #374151; }
+  html.light .text-gray-400          { color: #64748b; }
+  html.light .text-gray-500          { color: #94a3b8; }
+  html.light .text-gray-600          { color: #9ca3af; }
+
+  /* Hover states that would become invisible on light bg */
+  html.light .hover\:text-white:hover  { color: #0f172a; }
+  html.light .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.05); }
+
+  /* btn-gold: text-brand-dark in light mode would be near-white; keep it dark */
+  html.light .btn-gold { color: #1c1917; }
+
   /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: #0a0e17;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: #374151;
-    border-radius: 3px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: #4b5563;
-  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track  { background: rgb(var(--brand-darker)); }
+  ::-webkit-scrollbar-thumb  { background: #374151; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+  html.light ::-webkit-scrollbar-thumb       { background: #cbd5e1; }
+  html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 }
 
 @layer components {

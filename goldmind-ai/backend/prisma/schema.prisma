@@ -24,6 +24,7 @@ model User {
   chatSessions   ChatSession[]
   memberships    Membership[]
   transactions   Transaction[]
+  journals       TradingJournal[]
 
   @@map("users")
 }
@@ -181,4 +182,31 @@ enum PaymentMethod {
   VIRTUAL_ACCOUNT
   EWALLET
   BANK_TRANSFER
+}
+
+model TradingJournal {
+  id         String        @id @default(uuid())
+  userId     String        @map("user_id")
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instrument String        @default("XAUUSD")
+  lotSize    Float         @map("lot_size")
+  entryPrice Float         @map("entry_price")
+  takeProfit Float?        @map("take_profit")
+  stopLoss   Float?        @map("stop_loss")
+  result     JournalResult
+  pnlUsd     Float         @default(0) @map("pnl_usd")
+  notes      String?
+  tradeDate  DateTime      @default(now()) @map("trade_date")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([tradeDate])
+  @@map("trading_journals")
+}
+
+enum JournalResult {
+  WIN
+  LOSS
+  BE
 }

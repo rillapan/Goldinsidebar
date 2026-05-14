@@ -8,11 +8,13 @@ import { createClient } from '@/utils/supabase/client';
 import { connectSocket } from '@/lib/socket';
 import { useI18n } from '@/lib/i18n';
 import { LanguageToggle } from '@/components/ui/language-toggle';
+import { getStoredTheme, setTheme } from '@/lib/theme';
 import {
   LayoutDashboard,
   Zap,
   Newspaper,
   Bot,
+  BookOpen,
   UserCircle,
   ShieldCheck,
   LogOut,
@@ -20,8 +22,8 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-const navIcons: LucideIcon[] = [LayoutDashboard, Zap, Newspaper, Bot, UserCircle];
-const navHrefs = ['/dashboard', '/signals', '/bias', '/chat', '/profile'];
+const navIcons: LucideIcon[] = [LayoutDashboard, Zap, Newspaper, Bot, BookOpen, UserCircle];
+const navHrefs = ['/dashboard', '/signals', '/bias', '/chat', '/journal', '/profile'];
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -37,6 +39,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     icon: navIcons[i],
     desc: item.desc,
   }));
+
+  useEffect(() => {
+    setTheme(getStoredTheme());
+  }, []);
 
   useEffect(() => {
     fetchUser();

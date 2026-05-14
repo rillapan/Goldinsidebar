@@ -295,6 +295,7 @@ const en = {
       { label: 'Signals', desc: 'All trading signals' },
       { label: 'Daily Bias', desc: 'Daily fundamental analysis' },
       { label: 'AI Chat', desc: 'Ask AI analyst' },
+      { label: 'Journal', desc: 'Log & analyze trades' },
       { label: 'Profile', desc: 'Account & membership' },
     ],
     xauusd: 'XAUUSD Spot',

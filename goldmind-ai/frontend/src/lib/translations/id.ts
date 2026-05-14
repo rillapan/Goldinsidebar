@@ -295,6 +295,7 @@ const id = {
       { label: 'Sinyal', desc: 'Semua sinyal trading' },
       { label: 'Daily Bias', desc: 'Analisa fundamental harian' },
       { label: 'AI Chat', desc: 'Tanya AI analyst' },
+      { label: 'Jurnal', desc: 'Catat & analisa trade' },
       { label: 'Profil', desc: 'Akun & membership' },
     ],
     xauusd: 'XAUUSD Spot',

@@ -43,7 +43,9 @@
       "Bash(~/.claude/skills/gstack/bin/gstack-learnings-log '{\"skill\":\"investigate\",\"type\":\"architecture\",\"key\":\"supabase-es256-new-projects\",\"insight\":\"Supabase projects created 2024+ use ES256 \\(asymmetric\\) for user access tokens, not HS256. The SUPABASE_JWT_SECRET only works for anon key \\(HS256\\). User access tokens must be verified with the EC public key from JWKS endpoint: https://<project>.supabase.co/auth/v1/.well-known/jwks.json - NOT /.well-known/jwks.json \\(that returns 404\\). Use Node.js built-in crypto.createPublicKey\\({key: jwk, format: \\\\\"jwk\\\\\"}\\) to convert JWK to PEM — no extra packages needed.\",\"confidence\":10,\"source\":\"observed\",\"files\":[\"goldmind-ai/backend/src/middleware/auth.middleware.ts\"]}')",
       "mcp__claude_ai_Supabase__get_logs",
       "Bash(python3 -c ' *)",
-      "Bash(xargs grep -l \"connectSocket\")"
+      "Bash(xargs grep -l \"connectSocket\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

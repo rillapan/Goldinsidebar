@@ -4,7 +4,8 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { getSocket } from '@/lib/socket';
-import { Zap, Copy, Check, Clock, Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Zap, Copy, Check, Clock, Star, BookOpen } from 'lucide-react';
 
 // ── Tipe data ────────────────────────────────────────────
 interface Signal {
@@ -175,6 +176,7 @@ function ActiveSignalCard({ signal, livePrice }: { signal: Signal; livePrice: nu
   const countdown = useNextSignalCountdown();
   const profitIDR = Math.abs(signal.takeProfit - signal.entryPrice) * USD_TO_IDR;
   const riskIDR   = Math.abs(signal.entryPrice - signal.stopLoss) * USD_TO_IDR;
+  const router = useRouter();
 
   return (
     <div className="glass-card p-5 hover:border-amber-500/30 transition-all duration-200">
@@ -245,10 +247,20 @@ function ActiveSignalCard({ signal, livePrice }: { signal: Signal; livePrice: nu
       {/* Footer */}
       <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-800/60">
         <span className="text-gray-600 text-xs">Dibuat {timeAgo(signal.createdAt)}</span>
-        <span className="text-gray-600 text-xs flex items-center gap-1">
-          <Clock className="w-3 h-3" />
-          Update dalam {countdown}
-        </span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push(`/journal?entry=${signal.entryPrice}&tp=${signal.takeProfit}&sl=${signal.stopLoss}`)}
+            className="flex items-center gap-1.5 text-xs text-amber-400/70 hover:text-amber-400 transition-colors"
+            title="Salin ke Jurnal"
+          >
+            <BookOpen className="w-3 h-3" />
+            Salin ke Jurnal
+          </button>
+          <span className="text-gray-600 text-xs flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            Update dalam {countdown}
+          </span>
+        </div>
       </div>
     </div>
   );

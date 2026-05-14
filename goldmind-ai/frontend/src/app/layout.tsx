@@ -37,6 +37,16 @@ export default function RootLayout({
     <html lang="id" className={`dark ${inter.variable} ${syne.variable}`}>
       <head>
         <link rel="icon" href="/favicon.ico" />
+        {/* Inline script: apply saved theme before first paint to prevent flash */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            var t = localStorage.getItem('gm_theme');
+            if (t === 'light') {
+              document.documentElement.classList.remove('dark');
+              document.documentElement.classList.add('light');
+            }
+          } catch(e) {}
+        `}} />
       </head>
       <body className="min-h-screen bg-brand-dark font-sans">
         <I18nProvider>

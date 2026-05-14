@@ -27,6 +27,7 @@ import chatRoutes     from './routes/chat.routes';
 import adminRoutes    from './routes/admin.routes';
 import webhookRoutes  from './routes/webhook.routes';
 import internalRoutes from './routes/internal.routes';
+import journalRoutes  from './routes/journal.routes';
 
 import { errorHandler } from './middleware/error.middleware';
 
@@ -97,6 +98,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/chat',     chatLimiter, chatRoutes);
 app.use('/api/admin',    adminRoutes);
 app.use('/api/internal', internalRoutes);
+app.use('/api/journal',  journalRoutes);
 
 app.get('/api/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', service: 'goldmind-backend', timestamp: new Date().toISOString() });

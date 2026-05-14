@@ -4,7 +4,8 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/auth.store';
 import { api } from '@/lib/api';
-import { UserCircle } from 'lucide-react';
+import { UserCircle, Monitor } from 'lucide-react';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export default function ProfilePage() {
   const { user } = useAuthStore();
@@ -66,6 +67,21 @@ export default function ProfilePage() {
         ) : (
           <p className="text-gray-500 text-sm">Tidak ada membership aktif.</p>
         )}
+      </div>
+
+      {/* Display Settings */}
+      <div className="glass-card p-6">
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Monitor className="w-5 h-5 text-amber-400" />
+          Pengaturan Tampilan
+        </h2>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-white">Mode Tampilan</p>
+            <p className="text-xs text-gray-500 mt-0.5">Geser ke kiri untuk terang, kanan untuk gelap</p>
+          </div>
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Transaction History */}
