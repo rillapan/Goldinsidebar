@@ -685,3 +685,99 @@ MIN_CONFIDENCE_THRESHOLD=65
 ---
 
 *Update file ini setiap kali satu fase selesai. Ganti status "BELUM MULAI" → "IN PROGRESS" → "SELESAI".*
+
+---
+
+## AUDIT FITUR AI TEKNIKAL SINYAL
+
+> Diaudit pada: 2026-05-14
+> Metode: code review seluruh `ai-engine/` + `backend/src/`
+
+---
+
+### ✅ SUDAH IMPLEMENTED & SIAP DIGUNAKAN
+
+Fitur-fitur berikut sudah ada di kode dan siap dijalankan (hanya perlu env vars dikonfigurasi):
+
+#### AI Engine (`goldmind-ai/ai-engine/`)
+
+| Fitur | File | Detail |
+|-------|------|--------|
+| **Price Feed WebSocket** | `services/price_feed.py` | Subscribe ke Twelve Data WS → simpan ke Redis `price:xauusd` (TTL 120s) + `candles:xauusd:1m` (max 300 entries). Auto-reconnect jika putus. |
+| **Indikator Teknikal (7 indikator)** | `services/signal_engine.py:calculate_indicators()` | RSI(14), MACD(12,26,9), EMA 20/50/200, Bollinger Bands(20,2), ATR(14), Support/Resistance dari pivot high/low. |
+| **ATR Real dari OHLCV** | `services/signal_engine.py:fetch_ohlcv_from_rest()` | Fetch OHLCV 5min dari Twelve Data REST → ATR dihitung dari real H/L. Fallback ke synthetic proxy jika REST gagal. ATR proxy issue sudah DIPERBAIKI. |
+| **Claude AI Analysis** | `services/signal_engine.py:analyze_with_claude()` | Kirim 7 indikator ke Claude API, parse JSON response. Rule-based fallback jika `CLAUDE_API_KEY` tidak ada (untuk test pipeline). |
+| **APScheduler Auto-Signal** | `services/signal_engine.py` | Setiap 5 menit, Senin–Jumat, timezone Asia/Jakarta. Max 1 instance (mencegah job tumpuk). |
+| **Manual Signal Trigger** | `GET/POST /api/generate-signal` | Bisa dipanggil dari browser atau cURL untuk test manual satu siklus analisa. |
+| **Daily Bias Engine** | `services/bias_engine.py` | Fetch berita dari NewsAPI + Finnhub → Claude API → kirim ke backend via `POST /api/internal/bias`. |
+| **Health Check Endpoint** | `GET /api/health` | Status scheduler + list scheduled jobs. Berguna untuk monitoring. |
+
+#### Backend (`goldmind-ai/backend/src/`)
+
+| Fitur | File | Detail |
+|-------|------|--------|
+| **Internal Routes (Signal + Bias + Price)** | `routes/internal.routes.ts` | `POST /api/internal/signals` (terima sinyal dari AI, simpan DB, broadcast Socket.IO, blast Telegram), `POST /api/internal/bias` (upsert DB, blast WA+Telegram), `POST /api/internal/price` (broadcast harga ke frontend). Dilindungi `X-Internal-Key`. |
+| **Signal Routes (Premium)** | `routes/signal.routes.ts` | `GET /api/signals` (list paginated), `/active` (sinyal aktif), `/history` (riwayat + win rate stats), `/:id` (detail). |
+| **Daily Bias Routes (Premium)** | `routes/bias.routes.ts` | `GET /api/bias/today`, `/history` (30 hari terakhir). |
+| **AI Chat Assistant** | `routes/chat.routes.ts` | Multi-turn conversation dengan Claude, inject live price XAUUSD dari Redis, persist chat history ke DB. |
+| **Signal Outcome Monitor** | `lib/cron.ts` (Job 5) | Setiap 5 menit: bandingkan harga live vs SL/TP sinyal ACTIVE. Update status TP_HIT/SL_HIT, record `exitPrice`, `pnlPips`, `closedAt`. |
+| **Daily Bias Cron** | `lib/cron.ts` (Job 1) | Trigger AI engine 07:00 WIB Senin–Jumat untuk generate bias harian. |
+| **Membership Expiry Check** | `lib/cron.ts` (Job 2) | Setiap jam: nonaktifkan membership expired + update user status. |
+| **Renewal Reminder H-7** | `lib/cron.ts` (Job 3) | 09:00 WIB: kirim WA+Email ke user yang membership berakhir 4–7 hari lagi. |
+| **Renewal Reminder H-3 (Urgent)** | `lib/cron.ts` (Job 4) | 09:30 WIB: kirim WA+Email urgent ke user yang membership berakhir ≤3 hari. |
+| **Telegram Signal Notification** | `lib/notifications.ts:sendSignalNotification()` | Format sinyal lengkap (Entry, SL, TP, Confidence, R/R ratio, Reasoning) → blast ke Telegram channel. |
+| **Telegram Daily Bias Notification** | `lib/notifications.ts:sendDailyBiasNotification()` | Blast Daily Bias ke Telegram channel + WA semua member aktif. |
+| **Telegram Invite Link** | `lib/notifications.ts:createTelegramInviteLink()` | One-time invite link (expire 48 jam, limit 1 member). Dipanggil otomatis saat aktivasi membership. |
+| **WA Blast ke Semua Member** | `lib/notifications.ts:blastWhatsAppToActiveMembers()` | Kirim ke semua user ACTIVE via Fonnte multi-target (butuh `FONNTE_API_KEY`). |
+| **Membership Activation Notification** | `lib/notifications.ts:sendActivationNotification()` | WA + Email HTML + Telegram invite link setelah pembayaran dikonfirmasi. |
+| **Admin Dashboard API** | `routes/admin.routes.ts` | `/dashboard` (totalMembers, activeMembers, totalRevenue, winRate), `/members`, `/transactions`, `/bias/:id/publish`. |
+| **Redis Live Price Cache** | `lib/redis.ts` | `getLivePrice()` / `setLivePrice()` + session management. Graceful degradation jika Redis down. |
+| **Signal Schema Lengkap** | `prisma/schema.prisma` | Field `exitPrice`, `pnlPips`, `closedAt`, status enum `TP_HIT/SL_HIT/PARTIAL_TP/CANCELLED/MANUAL_CLOSE` sudah ada. |
+
+---
+
+### ❌ BELUM IMPLEMENTED (Gap yang Harus Ditutup)
+
+| Fitur | File Target | Detail Gap |
+|-------|-------------|-----------|
+| **Telegram Bot Handler ("kenapa?")** | `ai-engine/services/telegram_bot.py` | File TIDAK EXIST. Perlu dibuat: handle pesan "kenapa?" dari subscriber → baca `bot:last_reasoning:{chat_id}` dari Redis → reply. Lihat Fase 3 untuk kode lengkap. |
+| **Bot Integration ke main.py** | `ai-engine/main.py` | `lifespan()` tidak menjalankan bot polling. Perlu tambah `build_application()` → `initialize()` → `start()` → `start_polling()` saat startup. |
+| **Simpan Reasoning ke Redis** | `ai-engine/services/signal_engine.py` | Setelah `_push_signal_to_backend()` berhasil, reasoning tidak disimpan ke `bot:last_reasoning:*`. User yang reply "kenapa?" tidak dapat jawaban. |
+| **Bot /start Command (chat_id)** | `ai-engine/services/telegram_bot.py` | CommandHandler `/start` yang memberitahu user chat_id mereka untuk kirim ke admin. Belum ada. |
+| **python-telegram-bot package** | `ai-engine/requirements.txt` | Paket `python-telegram-bot==21.6` belum ada di requirements.txt. Perlu ditambah sebelum Fase 3. |
+| **Signal Position Update (trailing)** | `ai-engine/signal_engine.py` | Tidak ada loop monitoring untuk modifikasi SL/TP setelah sinyal aktif. Ini Approach B Prioritas 2. |
+
+---
+
+### Ringkasan Kesiapan
+
+```
+PIPELINE UTAMA (AI → Backend → Telegram):
+  Price Feed WebSocket      ✅ SIAP
+  Indikator Teknikal (7x)   ✅ SIAP
+  ATR Real OHLCV            ✅ SIAP (proxy issue sudah diperbaiki)
+  Claude Analysis           ✅ SIAP
+  Auto-Scheduler (5 menit)  ✅ SIAP
+  Push ke Backend           ✅ SIAP
+  Simpan ke PostgreSQL      ✅ SIAP
+  Broadcast Socket.IO       ✅ SIAP
+  Blast Telegram            ✅ SIAP (butuh BOT_TOKEN + CHANNEL_ID)
+  Signal Outcome Monitor    ✅ SIAP (TP_HIT/SL_HIT auto-update)
+
+FITUR PENDUKUNG:
+  Daily Bias (berita→Claude) ✅ SIAP
+  AI Chat Assistant          ✅ SIAP
+  Membership Lifecycle       ✅ SIAP (cron + notifikasi)
+  Admin Dashboard API        ✅ SIAP
+  WA Blast (Fonnte)          ✅ SIAP (butuh FONNTE_API_KEY)
+  Telegram Invite Link       ✅ SIAP (auto saat aktivasi)
+
+YANG BELUM ADA:
+  Telegram Bot "kenapa?"     ❌ BELUM — file belum dibuat (Fase 3)
+  store_reasoning_for_bot    ❌ BELUM — reasoning tidak disimpan ke Redis
+  Bot /start command         ❌ BELUM
+  python-telegram-bot pkg    ❌ BELUM — belum di requirements.txt
+  Signal trailing SL/TP      ❌ BELUM (Approach B, bukan blocker Approach A)
+```
+
+**Kesimpulan:** Pipeline sinyal AI teknikal dari price feed sampai Telegram blast sudah lengkap dan siap dijalankan. Yang belum hanya Telegram Bot interaktif ("kenapa?" handler) untuk Fase 3 — dan ini bukan blocker untuk mulai Fase 2 (test broadcast manual).

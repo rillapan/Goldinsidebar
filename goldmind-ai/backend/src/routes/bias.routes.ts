@@ -13,7 +13,7 @@ const router = Router();
 router.get('/today', verifyToken, checkMembership, async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
     const bias = await prisma.dailyBias.findFirst({
       where: { date: today, isPublished: true },
     });

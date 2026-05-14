@@ -20,10 +20,10 @@ const AI_ENGINE_URL = process.env.AI_ENGINE_URL || 'http://localhost:8000';
 export function setupCronJobs(): void {
 
   // ── 1. Daily Bias — Senin-Jumat pukul 07:00 WIB ─────
-  // 07:00 WIB = 00:00 UTC (WIB = UTC+7)
+  // timezone: 'Asia/Jakarta' → ekspresi dalam WIB, jadi '0 7' = 07:00 WIB
   // Trigger Python AI engine untuk fetch berita → generate bias → kirim ke backend
 
-  cron.schedule('0 0 * * 1-5', async () => {
+  cron.schedule('0 7 * * 1-5', async () => {
     console.log('🕐 [CRON] Memulai generate Daily Bias...');
     try {
       const response = await axios.post(

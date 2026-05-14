@@ -71,16 +71,16 @@ async def fetch_news() -> list[dict]:
 
 async def generate_bias_with_claude(news: list[dict]) -> dict | None:
     """Kirim berita ke Claude untuk analisa Market Bias."""
-    news_text = "\n".join([
-        f"- [{n['source']}] {n['title']}: {n.get('description', '')}"
-        for n in news
-    ])
+    if news:
+        news_text = "\n".join([
+            f"- [{n['source']}] {n['title']}: {n.get('description', '')}"
+            for n in news
+        ])
+        news_section = f"Berdasarkan data berita ekonomi global berikut:\n\n{news_text}\n\n"
+    else:
+        news_section = "Data berita tidak tersedia saat ini. Gunakan analisa teknikal umum dan sentimen pasar terkini untuk XAUUSD.\n\n"
 
-    prompt = f"""Berdasarkan data berita ekonomi global berikut:
-
-{news_text}
-
-Tentukan Market Bias XAUUSD untuk hari ini. Return JSON:
+    prompt = f"""{news_section}Tentukan Market Bias XAUUSD untuk hari ini. Return JSON:
 {{
   "direction": "BUY" atau "SELL" atau "WAIT",
   "confidence": <0-100>,
@@ -121,10 +121,10 @@ Return HANYA JSON, tanpa teks lain."""
 async def generate_bias():
     """Dipanggil oleh Node-Cron setiap pukul 07.00 WIB."""
     news = await fetch_news()
-    
+
     if not news:
-        return {"status": "skip", "reason": "No news data available"}
-    
+        print("⚠️ [BIAS] Tidak ada data berita — generate bias tanpa konteks berita")
+
     bias = await generate_bias_with_claude(news)
     if not bias:
         return {"status": "error", "reason": "Claude API failed"}
