@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Internal API Routes
+// SINYAL COHIBA — Internal API Routes
 // Digunakan HANYA oleh AI Engine (Python FastAPI service).
 // Tidak diekspos ke publik — dilindungi X-Internal-Key header.
 //

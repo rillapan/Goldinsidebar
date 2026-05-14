@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Syne } from 'next/font/google';
 import './globals.css';
+import { I18nProvider } from '@/lib/i18n';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -15,13 +16,13 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
-  title: 'GoldMind AI — AI Trading Signal XAUUSD',
+  title: 'SINYAL COHIBA — AI Trading Signal XAUUSD',
   description:
     'Platform AI Trading Signal XAUUSD terdepan di Indonesia. Dapatkan sinyal entry/exit real-time, Daily Market Bias, dan AI Chat Assistant untuk analisa teknikal.',
   keywords: ['trading', 'XAUUSD', 'gold', 'emas', 'AI signal', 'forex', 'Indonesia'],
-  authors: [{ name: 'GoldMind AI' }],
+  authors: [{ name: 'SINYAL COHIBA' }],
   openGraph: {
-    title: 'GoldMind AI — AI Trading Signal XAUUSD',
+    title: 'SINYAL COHIBA — AI Trading Signal XAUUSD',
     description: 'Sinyal trading emas berbasis AI. Akurasi tinggi, otomatis, real-time.',
     type: 'website',
   },
@@ -38,7 +39,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="min-h-screen bg-brand-dark font-sans">
-        {children}
+        <I18nProvider>
+          {children}
+        </I18nProvider>
       </body>
     </html>
   );

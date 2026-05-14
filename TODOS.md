@@ -31,7 +31,7 @@ Design debt items identified during `/plan-design-review` session (2026-05-07).
 ## Content
 
 **TODO-CONTENT-1: Ganti hero dashboard image dengan screenshot produk asli**
-- **What:** Saat ini hero 3D scroll card menampilkan foto Unsplash trading chart (`photo-1611974789855`). Harus diganti dengan screenshot dashboard GoldMind AI yang sesungguhnya.
+- **What:** Saat ini hero 3D scroll card menampilkan foto Unsplash trading chart (`photo-1611974789855`). Harus diganti dengan screenshot dashboard SINYAL COHIBA yang sesungguhnya.
 - **Why:** Ini adalah momen paling impactful di halaman — 3D scroll animation yang impressive diisi dengan gambar generic. User tidak melihat produk yang mereka akan beli.
 - **Pros:** Trust yang jauh lebih tinggi. User tahu persis apa yang mereka dapatkan. Product-market fit yang lebih terasa.
 - **Cons:** Menunggu dashboard UI selesai dan siap di-screenshot.

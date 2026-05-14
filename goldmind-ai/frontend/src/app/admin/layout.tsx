@@ -5,13 +5,21 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/auth.store';
+import {
+  ShieldCheck,
+  Users,
+  Zap,
+  Newspaper,
+  CreditCard,
+  type LucideIcon,
+} from 'lucide-react';
 
-const adminNav = [
-  { href: '/admin', label: 'Overview', icon: '🛡️' },
-  { href: '/admin/members', label: 'Members', icon: '👥' },
-  { href: '/admin/signals', label: 'Sinyal', icon: '⚡' },
-  { href: '/admin/bias', label: 'Daily Bias', icon: '📰' },
-  { href: '/admin/transactions', label: 'Transaksi', icon: '💳' },
+const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: '/admin', label: 'Overview', icon: ShieldCheck },
+  { href: '/admin/members', label: 'Members', icon: Users },
+  { href: '/admin/signals', label: 'Sinyal', icon: Zap },
+  { href: '/admin/bias', label: 'Daily Bias', icon: Newspaper },
+  { href: '/admin/transactions', label: 'Transaksi', icon: CreditCard },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -41,10 +49,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-gold flex items-center justify-center">
-                <span className="text-brand-dark font-bold text-sm">G</span>
-              </div>
-              <span className="font-bold text-gradient-gold">GoldMind AI</span>
+              <img src="/img/logo.jpg" alt="Logo" className="h-8 w-auto object-contain" />
+              <span className="font-bold text-gradient-gold">SINYAL COHIBA</span>
             </Link>
             <span className="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full border border-red-500/30">ADMIN</span>
           </div>
@@ -64,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   ? 'border-amber-500 text-amber-400'
                   : 'border-transparent text-gray-500 hover:text-white'
               }`}>
-              <span>{item.icon}</span>{item.label}
+              <item.icon className="w-4 h-4" />{item.label}
             </Link>
           ))}
         </div>

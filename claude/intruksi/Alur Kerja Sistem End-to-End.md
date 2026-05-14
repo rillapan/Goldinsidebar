@@ -1,4 +1,4 @@
-Ini adalah gambaran alur kerja sistem GoldMind AI secara end-to-end. Gunakan ini sebagai referensi arsitektur saat membangun setiap komponen.
+Ini adalah gambaran alur kerja sistem SINYAL COHIBA secara end-to-end. Gunakan ini sebagai referensi arsitektur saat membangun setiap komponen.
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "name": "goldmind-backend",
   "version": "1.0.0",
-  "description": "GoldMind AI Backend — Express.js REST API + Socket.IO",
+  "description": "SINYAL COHIBA Backend — Express.js REST API + Socket.IO",
   "main": "src/server.ts",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "@supabase/ssr": "^0.10.3",
+    "@supabase/supabase-js": "^2.105.4",
     "axios": "^1.6.2",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -27,7 +29,7 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.7",
     "socket.io": "^4.7.2",
-    "uuid": "^9.0.7",
+    "uuid": "^14.0.0",
     "xendit-node": "^1.21.2",
     "zod": "^3.22.4"
   },

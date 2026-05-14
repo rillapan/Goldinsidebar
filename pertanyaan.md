@@ -1,4 +1,4 @@
-# Hal yang Perlu Disiapkan — GoldMind AI
+# Hal yang Perlu Disiapkan — SINYAL COHIBA
 
 ## Wajib Sebelum Fase 2 (Database & Infrastruktur)
 | No | Yang Dibutuhkan | Untuk Apa | Cara Mendapatkan |

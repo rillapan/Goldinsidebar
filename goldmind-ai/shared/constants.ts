@@ -1,8 +1,8 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Shared Constants
+// SINYAL COHIBA — Shared Constants
 // ═══════════════════════════════════════════════════════════
 
-export const APP_NAME = 'GoldMind AI';
+export const APP_NAME = 'SINYAL COHIBA';
 export const APP_DESCRIPTION = 'AI Trading Signal & Membership Platform untuk XAUUSD';
 export const MEMBERSHIP_PRICE = 299000; // Rp 299.000
 export const MEMBERSHIP_DURATION_DAYS = 30;

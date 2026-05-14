@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Notification Service
+// SINYAL COHIBA — Notification Service
 // WA via Fonnte, Email via Nodemailer, Telegram via Bot API
 // ═══════════════════════════════════════════════════════════
 
@@ -89,7 +89,7 @@ export async function sendEmail(to: string, subject: string, html: string): Prom
   }
   try {
     await emailTransporter.sendMail({
-      from: `GoldMind AI <${process.env.EMAIL_FROM || 'noreply@goldmind.ai'}>`,
+      from: `SINYAL COHIBA <${process.env.EMAIL_FROM || 'noreply@goldmind.ai'}>`,
       to,
       subject,
       html,
@@ -190,22 +190,22 @@ export async function sendActivationNotification(user: {
   // Pesan WhatsApp
   const waMessage =
     `✅ *Selamat, ${user.name}!*\n\n` +
-    `Pembayaran berhasil dikonfirmasi. Membership GoldMind AI Anda kini *AKTIF*.\n\n` +
+    `Pembayaran berhasil dikonfirmasi. Membership SINYAL COHIBA Anda kini *AKTIF*.\n\n` +
     `📅 Masa aktif hingga: *${endDateStr}*\n\n` +
     `${telegramSection}\n\n` +
     `🚀 Akses dashboard Anda di:\n${FRONTEND_URL}/dashboard\n\n` +
-    `_Terima kasih telah bergabung! — GoldMind AI Team_`;
+    `_Terima kasih telah bergabung! — SINYAL COHIBA Team_`;
 
   // Email HTML
   const emailHtml = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0a0e17;color:#e5e7eb;padding:40px;border-radius:12px;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
         <div style="width:40px;height:40px;background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#0a0e17;font-size:18px;">G</div>
-        <span style="font-size:20px;font-weight:700;color:#f59e0b;">GoldMind AI</span>
+        <span style="font-size:20px;font-weight:700;color:#f59e0b;">SINYAL COHIBA</span>
       </div>
       <h2 style="color:white;margin-bottom:8px;">🎉 Membership Aktif!</h2>
       <p>Halo <strong>${user.name}</strong>,</p>
-      <p>Pembayaran Anda telah dikonfirmasi. Membership GoldMind AI Premium kini aktif.</p>
+      <p>Pembayaran Anda telah dikonfirmasi. Membership SINYAL COHIBA Premium kini aktif.</p>
       <div style="background:#111827;border:1px solid #1f2937;border-radius:8px;padding:20px;margin:24px 0;">
         <p style="margin:0;color:#9ca3af;font-size:14px;">Masa aktif hingga</p>
         <p style="margin:6px 0 0;font-size:22px;font-weight:700;color:#f59e0b;">${endDateStr}</p>
@@ -231,7 +231,7 @@ export async function sendActivationNotification(user: {
   // Kirim paralel, jangan block
   await Promise.allSettled([
     sendWhatsApp(user.phone, waMessage),
-    sendEmail(user.email, '✅ Membership GoldMind AI Aktif!', emailHtml),
+    sendEmail(user.email, '✅ Membership SINYAL COHIBA Aktif!', emailHtml),
   ]);
 }
 
@@ -315,27 +315,27 @@ export async function sendRenewalReminder(
   const urgentColor  = isUrgent ? '#ef4444' : '#f59e0b';
 
   const waMsg =
-    `${urgentPrefix}*Membership GoldMind AI berakhir dalam ${daysLeft} hari!*\n\n` +
+    `${urgentPrefix}*Membership SINYAL COHIBA berakhir dalam ${daysLeft} hari!*\n\n` +
     `📅 Tanggal berakhir: *${endDateStr}*\n\n` +
     `Perpanjang sekarang agar tidak ketinggalan sinyal trading & Daily Bias:\n` +
     `👉 ${FRONTEND_URL}/renew\n\n` +
-    `_GoldMind AI Team_`;
+    `_SINYAL COHIBA Team_`;
 
   const emailHtml = `
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0a0e17;color:#e5e7eb;padding:40px;border-radius:12px;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
         <div style="width:40px;height:40px;background:linear-gradient(135deg,#f59e0b,#d97706);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#0a0e17;font-size:18px;">G</div>
-        <span style="font-size:20px;font-weight:700;color:#f59e0b;">GoldMind AI</span>
+        <span style="font-size:20px;font-weight:700;color:#f59e0b;">SINYAL COHIBA</span>
       </div>
       <h2 style="color:${urgentColor};">${isUrgent ? '⚠️ Membership Hampir Berakhir!' : '⏰ Reminder Perpanjangan'}</h2>
       <p>Halo <strong>${user.name}</strong>,</p>
-      <p>Membership GoldMind AI Anda akan berakhir dalam <strong style="color:${urgentColor};">${daysLeft} hari</strong> pada ${endDateStr}.</p>
+      <p>Membership SINYAL COHIBA Anda akan berakhir dalam <strong style="color:${urgentColor};">${daysLeft} hari</strong> pada ${endDateStr}.</p>
       <p style="color:#d1d5db;">Perpanjang sekarang untuk tetap mendapat sinyal AI, Daily Bias, dan AI Chat Assistant setiap hari.</p>
       <a href="${FRONTEND_URL}/renew"
         style="display:inline-block;background:linear-gradient(135deg,#f59e0b,#d97706);color:#0a0e17;font-weight:700;padding:14px 28px;border-radius:8px;text-decoration:none;margin-top:16px;font-size:15px;">
         Perpanjang Membership →
       </a>
-      <p style="color:#6b7280;font-size:12px;margin-top:32px;">GoldMind AI — Platform Sinyal Trading XAUUSD berbasis AI</p>
+      <p style="color:#6b7280;font-size:12px;margin-top:32px;">SINYAL COHIBA — Platform Sinyal Trading XAUUSD berbasis AI</p>
     </div>
   `;
 
@@ -343,7 +343,7 @@ export async function sendRenewalReminder(
     sendWhatsApp(user.phone, waMsg),
     sendEmail(
       user.email,
-      `${urgentPrefix}Membership GoldMind AI berakhir dalam ${daysLeft} hari`,
+      `${urgentPrefix}Membership SINYAL COHIBA berakhir dalam ${daysLeft} hari`,
       emailHtml
     ),
   ]);

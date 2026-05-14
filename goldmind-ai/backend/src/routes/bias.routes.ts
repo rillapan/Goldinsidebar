@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Daily Bias Routes
+// SINYAL COHIBA — Daily Bias Routes
 // GET /api/bias/today    — Bias hari ini (premium)
 // GET /api/bias/history  — Riwayat bias 30 hari terakhir
 // ═══════════════════════════════════════════════════════════

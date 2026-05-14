@@ -2,7 +2,7 @@
   "name": "goldmind-ai",
   "version": "1.0.0",
   "private": true,
-  "description": "GoldMind AI — SaaS Trading Signal & Membership Platform",
+  "description": "SINYAL COHIBA — SaaS Trading Signal & Membership Platform",
   "scripts": {
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",

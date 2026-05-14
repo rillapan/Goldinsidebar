@@ -1,5 +1,5 @@
 """
-GoldMind AI — Price Feed Service
+SINYAL COHIBA — Price Feed Service
 Subscribe ke Twelve Data WebSocket untuk harga XAUUSD real-time.
 Simpan ke Redis sebagai buffer harga live.
 """
@@ -29,17 +29,28 @@ async def get_redis():
 
 async def _price_feed_loop():
     """Main loop: subscribe ke Twelve Data WebSocket, simpan harga ke Redis."""
+    if not TWELVE_DATA_API_KEY:
+        print("❌ [PRICE] TWELVE_DATA_API_KEY tidak dikonfigurasi — price feed dibatalkan")
+        return
+
     r = await get_redis()
-    
+
     while True:
         try:
-            async with websockets.connect(TWELVE_DATA_WS_URL) as ws:
+            # API key wajib ada di URL — Twelve Data menolak koneksi tanpa ini
+            ws_url = f"{TWELVE_DATA_WS_URL}?apikey={TWELVE_DATA_API_KEY}"
+            async with websockets.connect(ws_url) as ws:
+                # Tunggu pesan "hello" konfirmasi dari server sebelum subscribe
+                hello = await ws.recv()
+                hello_data = json.loads(hello)
+                if hello_data.get("status") != "ok":
+                    print(f"⚠️ [PRICE] Server hello tidak OK: {hello_data}")
+
                 # Subscribe ke XAUUSD
                 subscribe_msg = {
                     "action": "subscribe",
                     "params": {
                         "symbols": "XAU/USD",
-                        "apikey": TWELVE_DATA_API_KEY,
                     },
                 }
                 await ws.send(json.dumps(subscribe_msg))

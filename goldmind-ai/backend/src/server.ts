@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Main Server Entry Point
+// SINYAL COHIBA — Main Server Entry Point
 // Express.js + Socket.IO + Redis + Prisma
 // ═══════════════════════════════════════════════════════════
 
@@ -35,9 +35,14 @@ import { errorHandler } from './middleware/error.middleware';
 const app    = express();
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:3000',
+  'http://localhost:3001', // Next.js fallback port jika 3000 sudah dipakai
+];
+
 const io = new SocketIOServer(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -50,7 +55,12 @@ app.set('io', io);
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Izinkan request tanpa origin (curl, Postman, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} tidak diizinkan`));
+  },
   credentials: true,
 }));
 
@@ -126,24 +136,31 @@ setupCronJobs();
 const PORT = process.env.PORT || 5000;
 
 async function bootstrap(): Promise<void> {
+  // PostgreSQL — wajib, server tidak bisa jalan tanpanya
   try {
     await prisma.$connect();
     console.log('✅ PostgreSQL connected');
-
-    await redis.ping();
-    console.log('✅ Redis connected');
-
-    server.listen(PORT, () => {
-      console.log(`\n🚀 GoldMind AI Backend berjalan di port ${PORT}`);
-      console.log(`📡 Socket.IO siap`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}\n`);
-    });
-
-    startPriceBroadcast();
   } catch (error) {
-    console.error('❌ Server gagal start:', error);
+    console.error('❌ PostgreSQL gagal connect:', error);
     process.exit(1);
   }
+
+  // Redis — opsional, server tetap jalan jika tidak tersedia
+  try {
+    await redis.ping();
+    console.log('✅ Redis connected');
+  } catch (redisErr: any) {
+    console.warn('⚠️  Redis tidak tersedia:', redisErr.message);
+    console.warn('⚠️  Mode PostgreSQL-only aktif. Single-device enforcement dinonaktifkan sementara.');
+  }
+
+  server.listen(PORT, () => {
+    console.log(`\n🚀 SINYAL COHIBA Backend berjalan di port ${PORT}`);
+    console.log(`📡 Socket.IO siap`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+  });
+
+  startPriceBroadcast();
 }
 
 bootstrap();

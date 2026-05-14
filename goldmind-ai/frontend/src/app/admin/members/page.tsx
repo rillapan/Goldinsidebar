@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { Users } from 'lucide-react';
 
 export default function AdminMembersPage() {
   const [members, setMembers] = useState<any[]>([]);
@@ -23,7 +24,7 @@ export default function AdminMembersPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <h1 className="text-2xl font-bold">👥 Manajemen Member</h1>
+      <h1 className="text-2xl font-bold flex items-center gap-2"><Users className="w-6 h-6 text-amber-400" /> Manajemen Member</h1>
       <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

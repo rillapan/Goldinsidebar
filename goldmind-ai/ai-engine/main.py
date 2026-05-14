@@ -1,5 +1,5 @@
 """
-GoldMind AI — AI Engine (FastAPI)
+SINYAL COHIBA — AI Engine (FastAPI)
 Signal Processing + Daily Bias Generation
 
 Startup sequence:
@@ -41,7 +41,7 @@ async def lifespan(app: FastAPI):
     for job in signal_scheduler.get_jobs():
         print(f"   └─ Job: {job.id} | Next run: {job.next_run_time}")
 
-    print("\n🚀 GoldMind AI Engine siap\n")
+    print("\n🚀 SINYAL COHIBA Engine siap\n")
     yield
 
     # ── SHUTDOWN ───────────────────────────────────────
@@ -55,11 +55,11 @@ async def lifespan(app: FastAPI):
     await stop_price_feed()
     print("📡 Price feed dihentikan")
 
-    print("🛑 GoldMind AI Engine shutdown selesai")
+    print("🛑 SINYAL COHIBA Engine shutdown selesai")
 
 
 app = FastAPI(
-    title="GoldMind AI Engine",
+    title="SINYAL COHIBA Engine",
     description="AI Signal Processing & Daily Bias Generation untuk XAUUSD",
     version="1.0.0",
     lifespan=lifespan,

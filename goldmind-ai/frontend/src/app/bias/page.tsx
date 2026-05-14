@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { Newspaper } from 'lucide-react';
 
 export default function BiasPage() {
   const [todayBias, setTodayBias] = useState<any>(null);
@@ -30,7 +31,7 @@ export default function BiasPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <h1 className="text-2xl font-bold">📰 Daily Market Bias</h1>
+      <h1 className="text-2xl font-bold flex items-center gap-2"><Newspaper className="w-6 h-6 text-amber-400" /> Daily Market Bias</h1>
 
       {/* Today's Bias */}
       {todayBias ? (

@@ -4,6 +4,8 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 
+import { Zap } from 'lucide-react';
+
 export default function SignalsPage() {
   const [signals, setSignals] = useState<any[]>([]);
   const [stats, setStats] = useState<any>(null);
@@ -31,7 +33,7 @@ export default function SignalsPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">⚡ Sinyal Trading</h1>
+        <h1 className="text-2xl font-bold flex items-center gap-2"><Zap className="w-6 h-6 text-amber-400" /> Sinyal Trading</h1>
         {stats && (
           <div className="flex items-center gap-4 text-sm">
             <span className="text-gray-500">Win Rate: <span className="text-emerald-400 font-bold">{stats.winRate}%</span></span>

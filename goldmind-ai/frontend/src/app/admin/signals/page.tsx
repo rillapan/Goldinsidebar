@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { Zap } from 'lucide-react';
 
 export default function AdminSignalsPage() {
   const [signals, setSignals] = useState<any[]>([]);
@@ -23,7 +24,7 @@ export default function AdminSignalsPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <h1 className="text-2xl font-bold">⚡ Monitoring Sinyal</h1>
+      <h1 className="text-2xl font-bold flex items-center gap-2"><Zap className="w-6 h-6 text-amber-400" /> Monitoring Sinyal</h1>
       <div className="grid gap-3">
         {signals.map((s: any) => (
           <div key={s.id} className="glass-card p-4 flex items-center justify-between">

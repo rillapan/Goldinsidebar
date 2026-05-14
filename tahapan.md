@@ -1,4 +1,4 @@
-# GoldMind AI — Tahapan Pengerjaan
+# SINYAL COHIBA — Tahapan Pengerjaan
 
 **Approach yang dipilih: A (Telegram Bot-First Validation)**
 Dihasilkan oleh /plan-ceo-review pada 2026-05-08
@@ -211,7 +211,7 @@ File baru: `goldmind-ai/ai-engine/services/telegram_bot.py`
 
 ```python
 """
-GoldMind AI — Telegram Interactive Bot
+SINYAL COHIBA — Telegram Interactive Bot
 Menangani pesan masuk dari subscriber.
 Satu-satunya command yang direspons: "kenapa?" / "kenapa" / "why"
 """

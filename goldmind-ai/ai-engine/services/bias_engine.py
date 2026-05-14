@@ -1,5 +1,5 @@
 """
-GoldMind AI — Daily Bias Engine
+SINYAL COHIBA — Daily Bias Engine
 Fetch berita ekonomi → kirim ke Claude → hasilkan Market Bias harian
 """
 

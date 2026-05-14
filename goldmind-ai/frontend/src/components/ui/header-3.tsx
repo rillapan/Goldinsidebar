@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { MenuToggleIcon } from '@/components/ui/menu-toggle-icon';
+import { LanguageToggle } from '@/components/ui/language-toggle';
+import { useI18n } from '@/lib/i18n';
 import { createPortal } from 'react-dom';
 import {
   NavigationMenu,
@@ -38,54 +40,10 @@ type LinkItem = {
   description?: string;
 };
 
-// ─── GoldMind AI nav content ────────────────────────────────
-const platformLinks: LinkItem[] = [
-  {
-    title: 'AI Signal Engine',
-    href: '#features',
-    description: 'Sinyal BUY/SELL XAUUSD real-time dengan Entry, SL, TP',
-    icon: Zap,
-  },
-  {
-    title: 'Daily Market Bias',
-    href: '#features',
-    description: 'Analisa fundamental harian otomatis pukul 07.00 WIB',
-    icon: TrendingUp,
-  },
-  {
-    title: 'AI Chat Assistant',
-    href: '#features',
-    description: 'Tanya AI tentang kondisi pasar kapan saja',
-    icon: MessageCircle,
-  },
-  {
-    title: 'Analytics & Win Rate',
-    href: '#features',
-    description: 'Lacak performa sinyal dan statistik akurasi real-time',
-    icon: BarChart2,
-  },
-];
-
-const aboutLinks: LinkItem[] = [
-  {
-    title: 'Testimoni Member',
-    href: '#testimonials',
-    description: 'Kata 850+ trader Indonesia yang sudah bergabung',
-    icon: Star,
-  },
-  {
-    title: 'Cara Kerja',
-    href: '#how-it-works',
-    description: 'Bagaimana AI kami menganalisa XAUUSD setiap 5 menit',
-    icon: BookOpen,
-  },
-];
-
-const aboutLinks2: LinkItem[] = [
-  { title: 'Syarat & Ketentuan', href: '#', icon: FileText },
-  { title: 'Kebijakan Privasi',  href: '#', icon: Shield },
-  { title: 'Hubungi Kami',       href: '#', icon: Mail },
-];
+// ─── Icons for nav items ─────────────────────────────────────
+const platformIcons = [Zap, TrendingUp, MessageCircle, BarChart2];
+const aboutIcons = [Star, BookOpen];
+const aboutIcons2 = [FileText, Shield, Mail];
 
 // ─── useScroll hook ──────────────────────────────────────────
 function useScroll(threshold: number) {
@@ -109,6 +67,28 @@ function useScroll(threshold: number) {
 export function Header() {
   const [open, setOpen] = React.useState(false);
   const scrolled = useScroll(10);
+  const { t } = useI18n();
+
+  // Build link arrays from translations
+  const platformLinks: LinkItem[] = t.nav.platformLinks.map((link, i) => ({
+    title: link.title,
+    href: '#features',
+    icon: platformIcons[i],
+    description: link.description,
+  }));
+
+  const aboutLinks: LinkItem[] = t.nav.aboutLinks.map((link, i) => ({
+    title: link.title,
+    href: i === 0 ? '#testimonials' : '#how-it-works',
+    icon: aboutIcons[i],
+    description: link.description,
+  }));
+
+  const aboutLinks2: LinkItem[] = t.nav.aboutLinks2.map((title, i) => ({
+    title,
+    href: '#',
+    icon: aboutIcons2[i],
+  }));
 
   React.useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -128,9 +108,7 @@ export function Header() {
         <div className="flex items-center gap-6">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-amber-600 text-black shadow-[0_0_14px_rgba(245,158,11,0.4)]">
-              <Zap className="h-4 w-4" strokeWidth={2.5} />
-            </div>
+            <img src="/img/logo.jpg" alt="Logo" className="h-8 w-auto object-contain" />
             <span
               className="text-xl font-bold"
               style={{
@@ -139,7 +117,7 @@ export function Header() {
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              GoldMind AI
+              SINYAL COHIBA
             </span>
           </Link>
 
@@ -150,7 +128,7 @@ export function Header() {
               {/* Platform dropdown */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-gray-300">
-                  Platform
+                  {t.nav.platform}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="bg-brand-card p-1.5">
                   <ul className="grid w-[480px] grid-cols-2 gap-1.5 rounded-lg border border-brand-border bg-brand-darker p-2 shadow-xl">
@@ -162,9 +140,9 @@ export function Header() {
                   </ul>
                   <div className="px-2 py-2">
                     <p className="text-xs text-gray-500">
-                      Win rate 87% dari 1.240+ sinyal.{' '}
+                      {t.nav.dropdownNote}{' '}
                       <Link href="/register" className="text-amber-400 font-medium hover:underline">
-                        Mulai free trial →
+                        {t.nav.dropdownCta}
                       </Link>
                     </p>
                   </div>
@@ -174,7 +152,7 @@ export function Header() {
               {/* Tentang dropdown */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-gray-300">
-                  Tentang
+                  {t.nav.about}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="bg-brand-card p-1.5">
                   <div className="grid w-[400px] grid-cols-2 gap-2">
@@ -208,7 +186,7 @@ export function Header() {
                   href="#pricing"
                   className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-brand-card hover:text-white rounded-md transition-colors cursor-pointer"
                 >
-                  Harga
+                  {t.nav.pricing}
                 </NavigationMenuLink>
               </NavigationMenuItem>
 
@@ -216,17 +194,20 @@ export function Header() {
           </NavigationMenu>
         </div>
 
-        {/* ── Right: CTA buttons + mobile toggle ── */}
+        {/* ── Right: Language Toggle + CTA buttons + mobile toggle ── */}
         <div className="flex items-center gap-2">
+          {/* Language toggle — always visible */}
+          <LanguageToggle className="hidden sm:flex" />
+
           <Link
             href="/login"
             className="hidden md:inline-flex text-sm text-gray-400 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-brand-card"
           >
-            Login
+            {t.nav.login}
           </Link>
           <Link href="/register" className="hidden md:inline-flex">
             <Button size="sm" className="rounded-full px-5 text-sm font-semibold">
-              Mulai Sekarang
+              {t.nav.startNow}
             </Button>
           </Link>
 
@@ -248,20 +229,25 @@ export function Header() {
       {/* ════════════ MOBILE MENU (portal) ════════════ */}
       <MobileMenu open={open} className="flex flex-col justify-between gap-4">
         <div className="flex flex-col gap-3 overflow-y-auto">
+          {/* Language toggle — mobile */}
+          <div className="flex justify-end mb-2">
+            <LanguageToggle />
+          </div>
+
           {/* Platform section */}
           <div>
             <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-widest text-gray-500">
-              Platform
+              {t.nav.platform}
             </p>
             {platformLinks.map((link) => (
               <MobileListItem key={link.title} {...link} onClick={() => setOpen(false)} />
             ))}
           </div>
 
-          {/* Tentang section */}
+          {/* About section */}
           <div>
             <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-widest text-gray-500">
-              Tentang
+              {t.nav.about}
             </p>
             {aboutLinks.map((link) => (
               <MobileListItem key={link.title} {...link} onClick={() => setOpen(false)} />
@@ -286,7 +272,7 @@ export function Header() {
             onClick={() => setOpen(false)}
             className="flex items-center justify-between border-t border-brand-border pt-3 text-base font-medium text-white"
           >
-            <span>Harga</span>
+            <span>{t.nav.pricing}</span>
             <ArrowRight className="h-4 w-4 text-gray-500" />
           </a>
         </div>
@@ -294,12 +280,12 @@ export function Header() {
         {/* CTA buttons */}
         <div className="flex flex-col gap-2 border-t border-brand-border pt-4">
           <Link href="/login" onClick={() => setOpen(false)}>
-            <Button variant="outline" className="w-full">Login</Button>
+            <Button variant="outline" className="w-full">{t.nav.login}</Button>
           </Link>
           <Link href="/register" onClick={() => setOpen(false)}>
             <Button className="w-full font-bold flex items-center justify-center gap-2">
               <Rocket className="h-4 w-4" strokeWidth={2} />
-              Mulai Free Trial 7 Hari
+              {t.nav.freeTrial}
             </Button>
           </Link>
         </div>

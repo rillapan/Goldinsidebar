@@ -1,4 +1,4 @@
-// GoldMind AI — Chat Routes (AI Chat Assistant)
+// SINYAL COHIBA — Chat Routes (AI Chat Assistant)
 import { Router, Request, Response, NextFunction } from 'express';
 import axios from 'axios';
 import { prisma } from '../lib/prisma';
@@ -70,7 +70,7 @@ router.post('/sessions/:sessionId/messages', async (req: Request, res: Response,
     });
 
     // Build prompt untuk Claude
-    const systemPrompt = `Kamu adalah GoldMind AI Assistant, analis trading emas (XAUUSD) profesional.
+    const systemPrompt = `Kamu adalah SINYAL COHIBA Assistant, analis trading emas (XAUUSD) profesional.
 Data harga XAUUSD terkini: ${JSON.stringify(livePrice || 'tidak tersedia')}
 
 Aturan:

@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Signal Routes
+// SINYAL COHIBA — Signal Routes
 // GET  /api/signals          — List sinyal (premium only)
 // GET  /api/signals/active   — Sinyal yang masih aktif
 // GET  /api/signals/history  — Riwayat sinyal + statistik

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
+import { Timer, RefreshCw } from 'lucide-react';
 
 export default function RenewPage() {
   const { user } = useAuthStore();
@@ -29,7 +30,7 @@ export default function RenewPage() {
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-3xl" />
 
       <div className="w-full max-w-md relative z-10 text-center">
-        <div className="text-6xl mb-6">⏰</div>
+        <Timer className="w-14 h-14 text-amber-400 mx-auto mb-6" />
         <h1 className="text-2xl font-bold mb-3">Membership Telah Berakhir</h1>
         <p className="text-gray-400 mb-2">
           Halo <span className="text-white font-semibold">{user?.name || 'Member'}</span>,
@@ -58,7 +59,7 @@ export default function RenewPage() {
 
         <button onClick={handleRenew} disabled={loading}
           className="w-full btn-gold rounded-xl py-4 text-lg disabled:opacity-50 mb-4">
-          {loading ? 'Membuat Invoice...' : '🔄 Perpanjang Membership'}
+          {loading ? 'Membuat Invoice...' : <span className="flex items-center justify-center gap-2"><RefreshCw className="w-5 h-5" /> Perpanjang Membership</span>}
         </button>
 
         <Link href="/" className="text-gray-500 text-sm hover:text-gray-300 transition-colors">

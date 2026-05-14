@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Webhook Routes (Xendit Callback)
+// SINYAL COHIBA — Webhook Routes (Xendit Callback)
 // POST /api/webhooks/xendit — Terima notifikasi pembayaran Xendit
 //
 // ALUR WEBHOOK:
@@ -14,6 +14,7 @@
 // ═══════════════════════════════════════════════════════════
 
 import { Router, Request, Response, NextFunction } from 'express';
+import { Server as SocketIOServer } from 'socket.io';
 import { prisma } from '../lib/prisma';
 import { sendActivationNotification } from '../lib/notifications';
 
@@ -59,9 +60,9 @@ router.post('/xendit', async (req: Request, res: Response, next: NextFunction) =
       return;
     }
 
-    // Cegah double-processing jika webhook dikirim lebih dari sekali
-    if (transaction.status === 'PAID' && status === 'PAID') {
-      console.log(`ℹ️ [WEBHOOK] Transaksi sudah diproses sebelumnya: ${xenditInvoiceId}`);
+    // Cegah double-processing — PAID adalah final state, tidak bisa di-downgrade
+    if (transaction.status === 'PAID') {
+      console.log(`ℹ️ [WEBHOOK] Transaksi sudah PAID, abaikan: ${xenditInvoiceId}`);
       res.status(200).json({ message: 'Already processed' });
       return;
     }
@@ -115,7 +116,14 @@ router.post('/xendit', async (req: Request, res: Response, next: NextFunction) =
         `Membership berlaku hingga ${thirtyDaysLater.toLocaleDateString('id-ID')}`
       );
 
-      // d. Kirim notifikasi WA + Email (async — tidak block response Xendit)
+      // d. Notifikasi real-time ke browser user (tanpa perlu refresh/logout)
+      const io = req.app.get('io') as SocketIOServer | undefined;
+      if (io) {
+        io.to(`user:${transaction.userId}`).emit('user_upgraded');
+        console.log(`📡 [WEBHOOK] user_upgraded → user:${transaction.userId}`);
+      }
+
+      // e. Kirim notifikasi WA + Email (async — tidak block response Xendit)
       sendActivationNotification({
         name: transaction.user.name,
         email: transaction.user.email,

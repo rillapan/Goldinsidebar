@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { CreditCard } from 'lucide-react';
 
 export default function AdminTransactionsPage() {
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -23,7 +24,7 @@ export default function AdminTransactionsPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <h1 className="text-2xl font-bold">💳 Log Transaksi</h1>
+      <h1 className="text-2xl font-bold flex items-center gap-2"><CreditCard className="w-6 h-6 text-amber-400" /> Log Transaksi</h1>
       <div className="glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">

@@ -1,4 +1,4 @@
-// GoldMind AI — Admin Routes
+// SINYAL COHIBA — Admin Routes
 import { Router, Request, Response, NextFunction } from 'express';
 import { prisma } from '../lib/prisma';
 import { verifyToken, requireAdmin } from '../middleware/auth.middleware';

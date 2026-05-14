@@ -1,11 +1,12 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Auth Store (Zustand)
-// Global state management for authentication
+// SINYAL COHIBA — Auth Store (Zustand + Supabase Auth)
+// register() dihapus — ditangani langsung di register/page.tsx.
+// login() hanya menyimpan state — caller bertanggung jawab auth Supabase.
 // ═══════════════════════════════════════════════════════════
 
 import { create } from 'zustand';
-import Cookies from 'js-cookie';
 import { api } from '@/lib/api';
+import { createClient } from '@/utils/supabase/client';
 
 interface User {
   id: string;
@@ -23,64 +24,69 @@ interface User {
 
 interface AuthState {
   user: User | null;
-  token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
 
-  login: (email: string, password: string) => Promise<{ redirectTo: string }>;
-  register: (data: { name: string; email: string; phone: string; password: string }) => Promise<{ redirectTo: string }>;
+  // Simpan user ke store (dipanggil setelah Supabase login sukses)
+  login: (user: User) => void;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
   setUser: (user: User | null) => void;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  token: Cookies.get('gm_token') || null,
   isLoading: true,
   isAuthenticated: false,
 
-  login: async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
-    const { user, token, deviceId, redirectTo } = res.data.data;
-
-    Cookies.set('gm_token', token, { expires: 7 });
-    localStorage.setItem('gm_device_id', deviceId);
-
-    set({ user, token, isAuthenticated: true, isLoading: false });
-    return { redirectTo };
-  },
-
-  register: async (data) => {
-    const res = await api.post('/auth/register', data);
-    const { user, token, deviceId, redirectTo } = res.data.data;
-
-    Cookies.set('gm_token', token, { expires: 7 });
-    localStorage.setItem('gm_device_id', deviceId);
-
-    set({ user, token, isAuthenticated: true, isLoading: false });
-    return { redirectTo };
+  // Hanya update state — supabase.auth.signInWithPassword dipanggil di page
+  login: (user: User) => {
+    set({ user, isAuthenticated: true, isLoading: false });
   },
 
   logout: async () => {
+    const supabase = createClient();
+
+    // Hapus session di backend Redis
     try {
       await api.post('/auth/logout');
-    } catch {}
-    Cookies.remove('gm_token');
-    set({ user: null, token: null, isAuthenticated: false, isLoading: false });
+    } catch (err) {
+      console.error('[auth] Backend logout error (non-fatal):', err);
+    }
+
+    // Sign out dari Supabase (hapus token dari browser)
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('[auth] Supabase signOut error:', err);
+    }
+
+    set({ user: null, isAuthenticated: false, isLoading: false });
   },
 
+  // Dipanggil saat app pertama load — cek session Supabase lalu ambil user dari backend
   fetchUser: async () => {
-    const token = Cookies.get('gm_token');
-    if (!token) {
-      set({ isLoading: false, isAuthenticated: false });
-      return;
-    }
+    const supabase = createClient();
     try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (error) {
+        console.error('[auth] getSession error:', error.message);
+        set({ isLoading: false, isAuthenticated: false });
+        return;
+      }
+
+      if (!session) {
+        set({ isLoading: false, isAuthenticated: false });
+        return;
+      }
+
+      // Session valid — ambil data user dari backend (termasuk membership info)
       const res = await api.get('/auth/me');
       set({ user: res.data.data, isAuthenticated: true, isLoading: false });
-    } catch {
-      Cookies.remove('gm_token');
+
+    } catch (err) {
+      console.error('[auth] fetchUser error:', err);
       set({ user: null, isAuthenticated: false, isLoading: false });
     }
   },

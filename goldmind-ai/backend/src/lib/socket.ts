@@ -1,24 +1,30 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Socket.IO Setup
-// Real-time: sinyal trading + harga live XAUUSD
+// SINYAL COHIBA — Socket.IO Setup
+// Real-time: sinyal trading + harga live XAUUSD + upgrade notif
 // ═══════════════════════════════════════════════════════════
 
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { prisma } from './prisma';
+import { resolveKey } from '../middleware/auth.middleware';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+interface SupabaseJwtPayload {
+  sub: string;
+  email: string;
+}
 
 interface AuthenticatedSocket extends Socket {
   userId?: string;
   userRole?: string;
+  userStatus?: string;
 }
 
 export function setupSocketIO(io: SocketIOServer): void {
 
   // ── Auth Middleware Socket.IO ──────────────────────────
-  // Verifikasi JWT saat client connect.
-  // ADMIN bypass — tidak cek status membership.
+  // Verifikasi Supabase JWT (bukan custom JWT).
+  // PENDING users diizinkan connect — mereka join room personal
+  // untuk menerima notifikasi user_upgraded setelah bayar.
 
   io.use(async (socket: AuthenticatedSocket, next) => {
     try {
@@ -30,10 +36,15 @@ export function setupSocketIO(io: SocketIOServer): void {
         return next(new Error('Authentication required'));
       }
 
-      const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+      const jwtSecret = process.env.SUPABASE_JWT_SECRET || process.env.JWT_SECRET!;
+      const keyInfo = await resolveKey(token, jwtSecret);
+      if (!keyInfo) return next(new Error('Tidak bisa resolve JWT key'));
+      const decoded = jwt.verify(token, keyInfo.key, {
+        algorithms: keyInfo.algorithms,
+      }) as SupabaseJwtPayload;
 
       const user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
+        where: { supabase_id: decoded.sub },
         select: { id: true, role: true, status: true },
       });
 
@@ -41,20 +52,9 @@ export function setupSocketIO(io: SocketIOServer): void {
         return next(new Error('User tidak ditemukan'));
       }
 
-      // ADMIN selalu diizinkan masuk terlepas dari status membership
-      if (user.role === 'ADMIN') {
-        socket.userId   = user.id;
-        socket.userRole = 'ADMIN';
-        return next();
-      }
-
-      // Member biasa harus berstatus ACTIVE
-      if (user.status !== 'ACTIVE') {
-        return next(new Error('Membership tidak aktif'));
-      }
-
       socket.userId   = user.id;
       socket.userRole = user.role;
+      socket.userStatus = user.status;
       next();
     } catch {
       next(new Error('Token tidak valid'));
@@ -64,10 +64,16 @@ export function setupSocketIO(io: SocketIOServer): void {
   // ── Connection Handler ─────────────────────────────────
 
   io.on('connection', (socket: AuthenticatedSocket) => {
-    console.log(`📡 [SOCKET] Client terhubung: ${socket.userId}`);
+    console.log(`📡 [SOCKET] Client terhubung: ${socket.userId} (${socket.userStatus})`);
 
-    // Semua member aktif + admin masuk ke room sinyal
-    socket.join('premium_users');
+    // Semua user (PENDING maupun ACTIVE) join room personal
+    // untuk menerima notifikasi upgrade real-time.
+    socket.join(`user:${socket.userId}`);
+
+    // Hanya ACTIVE + ADMIN yang bisa terima sinyal & harga.
+    if (socket.userStatus === 'ACTIVE' || socket.userRole === 'ADMIN') {
+      socket.join('premium_users');
+    }
 
     if (socket.userRole === 'ADMIN') {
       socket.join('admin_room');
@@ -81,27 +87,21 @@ export function setupSocketIO(io: SocketIOServer): void {
   console.log('📡 Socket.IO configured');
 }
 
-/**
- * Broadcast sinyal baru ke semua member di room premium_users.
- * Dipanggil dari internal.routes.ts saat AI engine push sinyal baru.
- */
 export function broadcastSignal(io: SocketIOServer, signalData: object): void {
   io.to('premium_users').emit('new_signal', signalData);
   console.log('📡 [SOCKET] Sinyal dibroadcast ke premium_users');
 }
 
-/**
- * Broadcast update harga XAUUSD ke semua client.
- * Dipanggil dari server.ts price broadcast interval (setiap 2 detik).
- */
 export function broadcastPrice(io: SocketIOServer, priceData: object): void {
   io.to('premium_users').emit('price_update', priceData);
 }
 
-/**
- * Broadcast update sinyal (geser SL, partial TP, close).
- * Dipanggil ketika status sinyal berubah.
- */
 export function broadcastSignalUpdate(io: SocketIOServer, updateData: object): void {
   io.to('premium_users').emit('signal_update', updateData);
+}
+
+// Dipanggil dari webhook setelah payment PAID — notifikasi upgrade real-time.
+export function notifyUserUpgraded(io: SocketIOServer, userId: string): void {
+  io.to(`user:${userId}`).emit('user_upgraded');
+  console.log(`📡 [SOCKET] user_upgraded → user:${userId}`);
 }

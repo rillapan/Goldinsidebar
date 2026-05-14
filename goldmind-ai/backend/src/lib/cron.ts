@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Cron Jobs Setup
+// SINYAL COHIBA — Cron Jobs Setup
 // Dijalankan saat server start. Semua jadwal WIB (Asia/Jakarta).
 //
 // Job 1: Daily Bias — trigger AI engine setiap Senin-Jumat 07:00 WIB
@@ -12,7 +12,7 @@
 import cron from 'node-cron';
 import axios from 'axios';
 import { prisma } from './prisma';
-import { redis } from './redis';
+import { getLivePrice } from './redis';
 import { sendRenewalReminder } from './notifications';
 
 const AI_ENGINE_URL = process.env.AI_ENGINE_URL || 'http://localhost:8000';
@@ -174,13 +174,12 @@ export function setupCronJobs(): void {
 
   cron.schedule('*/5 * * * *', async () => {
     try {
-      const raw = await redis.get('price:xauusd');
-      if (!raw) {
-        console.warn('⚠️ [CRON/OUTCOME] price:xauusd tidak ada di Redis — skip siklus');
+      const priceData = await getLivePrice() as { price: number; timestamp: string } | null;
+      if (!priceData) {
+        console.warn('⚠️ [CRON/OUTCOME] price:xauusd tidak ada di Redis atau Redis offline — skip siklus');
         return;
       }
 
-      const priceData = JSON.parse(raw) as { price: number; timestamp: string };
       const ageSeconds = (Date.now() - new Date(priceData.timestamp).getTime()) / 1000;
       if (ageSeconds > 120) {
         console.warn(`⚠️ [CRON/OUTCOME] price feed stale (${Math.round(ageSeconds)}s) — skip siklus`);

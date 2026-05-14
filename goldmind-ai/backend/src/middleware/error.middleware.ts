@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Global Error Handler Middleware
+// SINYAL COHIBA — Global Error Handler Middleware
 // ═══════════════════════════════════════════════════════════
 
 import { Request, Response, NextFunction } from 'express';

@@ -1,18 +1,16 @@
-// ═══════════════════════════════════════════════════════════
-// GoldMind AI — JWT Authentication Middleware
-// ═══════════════════════════════════════════════════════════
-
 import { Request, Response, NextFunction } from 'express';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
+import { createPublicKey } from 'crypto';
 import { prisma } from '../lib/prisma';
 import { getUserSession } from '../lib/redis';
 
-// Extend Express Request type to include user data
 declare global {
   namespace Express {
     interface Request {
       user?: {
         userId: string;
+        email?: string;
+        supabaseId?: string;
         role?: string;
         status?: string;
       };
@@ -21,82 +19,158 @@ declare global {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-do-not-use-in-production';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
-
-// ─── 1. GENERATE TOKEN ─────────────────────────────────
-
-export function generateToken(userId: string): string {
-  const options: SignOptions = { expiresIn: JWT_EXPIRES_IN as any };
-  return jwt.sign({ userId }, JWT_SECRET, options);
+interface SupabaseJwtPayload {
+  sub: string;
+  email: string;
+  aud: string;
+  role: string;
+  iss?: string;
 }
 
-// ─── 2. VERIFY TOKEN ────────────────────────────────────
+// ── JWKS cache ─────────────────────────────────────────────
+// Supabase project baru (2024+) pakai ES256 (asymmetric).
+// Fetch public key SEKALI dari JWKS endpoint, cache seumur process.
+// Tidak butuh package tambahan — pakai Node.js built-in crypto.
 
-export async function verifyToken(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
+let _cachedJwksKey: string | null = null;
+
+async function fetchJwksPublicKey(token: string): Promise<string | null> {
+  if (_cachedJwksKey) return _cachedJwksKey;
+
   try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({
-        success: false,
-        message: 'Akses ditolak. Token tidak ditemukan.',
-        code: 'NO_TOKEN',
-      });
-      return;
-    }
+    const decoded = jwt.decode(token, { complete: true });
+    const iss = (decoded?.payload as any)?.iss as string | undefined;
+    if (!iss) return null;
 
-    const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    // iss = "https://xxx.supabase.co/auth/v1" → JWKS ada di bawah iss langsung
+    const jwksUrl = `${iss.replace(/\/$/, '')}/.well-known/jwks.json`;
+    const res = await fetch(jwksUrl);
+    if (!res.ok) return null;
 
-    // ── Multi-login Detection ──
-    const deviceId = req.headers['x-device-id'] as string | undefined;
-    
-    if (deviceId) {
-      const activeDeviceId = await getUserSession(decoded.userId);
-      
-      if (activeDeviceId && activeDeviceId !== deviceId) {
-        res.status(403).json({
-          success: false,
-          message: 'Akun sedang digunakan di perangkat lain.',
-          code: 'MULTI_LOGIN_DETECTED',
-        });
-        return;
-      }
-    }
+    const jwks = await res.json() as { keys: object[] };
+    const jwk = jwks.keys?.[0];
+    if (!jwk) return null;
 
-    req.user = { userId: decoded.userId };
-    req.deviceId = deviceId;
-    
-    next();
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      res.status(401).json({
-        success: false,
-        message: 'Token telah kedaluwarsa. Silakan login ulang.',
-        code: 'TOKEN_EXPIRED',
-      });
-      return;
-    }
-    
-    if (error instanceof jwt.JsonWebTokenError) {
-      res.status(401).json({
-        success: false,
-        message: 'Token tidak valid.',
-        code: 'INVALID_TOKEN',
-      });
-      return;
-    }
-
-    next(error);
+    const pubKey = createPublicKey({ key: jwk as any, format: 'jwk' });
+    _cachedJwksKey = pubKey.export({ type: 'spki', format: 'pem' }) as string;
+    console.log('[auth] JWKS public key fetched & cached (ES256 ready)');
+    return _cachedJwksKey;
+  } catch (err: any) {
+    console.error('[auth] JWKS fetch gagal:', err.message);
+    return null;
   }
 }
 
-// ─── 3. CHECK MEMBERSHIP ────────────────────────────────
+// ── Pilih kunci & algoritma berdasarkan header token ───────
+export async function resolveKey(token: string, symmetricSecret: string): Promise<{
+  key: string | Buffer;
+  algorithms: jwt.Algorithm[];
+} | null> {
+  const header = jwt.decode(token, { complete: true })?.header;
+  const alg = header?.alg as string | undefined;
+
+  if (alg === 'ES256') {
+    const pubKey = await fetchJwksPublicKey(token);
+    if (!pubKey) return null;
+    return { key: pubKey, algorithms: ['ES256'] };
+  }
+
+  // Default HS256 — project lama / legacy JWT secret
+  return { key: symmetricSecret, algorithms: ['HS256'] };
+}
+
+// ── verifySupabaseJwt ───────────────────────────────────────
+// Verifikasi JWT Supabase TANPA lookup DB.
+// Dipakai khusus POST /auth/profile (user belum ada di DB saat pertama register).
+export const verifySupabaseJwt = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: 'TOKEN_MISSING' });
+    }
+
+    const jwtSecret = process.env.SUPABASE_JWT_SECRET || process.env.JWT_SECRET!;
+    const keyInfo = await resolveKey(token, jwtSecret);
+
+    if (!keyInfo) {
+      console.error('[auth] verifySupabaseJwt — gagal resolve JWKS key');
+      return res.status(401).json({ error: 'INVALID_TOKEN' });
+    }
+
+    console.log(`[auth] verifySupabaseJwt — alg: ${keyInfo.algorithms[0]}, token: ${token.substring(0, 20)}...`);
+
+    const payload = jwt.verify(token, keyInfo.key, {
+      algorithms: keyInfo.algorithms,
+    }) as SupabaseJwtPayload;
+
+    req.user = {
+      userId: '',
+      supabaseId: payload.sub,
+      email: payload.email,
+    };
+
+    next();
+  } catch (error: any) {
+    console.error(`[auth] verifySupabaseJwt gagal [${error.name}]: ${error.message}`);
+    return res.status(401).json({ error: 'INVALID_TOKEN' });
+  }
+};
+
+// ── verifyToken ─────────────────────────────────────────────
+// Verifikasi JWT + lookup user di DB + cek single-device (Redis).
+export const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: 'TOKEN_MISSING' });
+    }
+
+    const jwtSecret = process.env.SUPABASE_JWT_SECRET || process.env.JWT_SECRET!;
+    const keyInfo = await resolveKey(token, jwtSecret);
+
+    if (!keyInfo) {
+      console.error('[auth] verifyToken — gagal resolve JWKS key');
+      return res.status(401).json({ error: 'INVALID_TOKEN' });
+    }
+
+    console.log(`[auth] verifyToken — alg: ${keyInfo.algorithms[0]}, token: ${token.substring(0, 20)}...`);
+
+    const payload = jwt.verify(token, keyInfo.key, {
+      algorithms: keyInfo.algorithms,
+    }) as SupabaseJwtPayload;
+
+    const user = await prisma.user.findUnique({
+      where: { supabase_id: payload.sub },
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: 'USER_NOT_FOUND' });
+    }
+
+    const deviceId = req.headers['x-device-id'] as string;
+    const storedDeviceId = await getUserSession(payload.sub);
+
+    if (storedDeviceId && deviceId && storedDeviceId !== deviceId) {
+      return res.status(403).json({ error: 'MULTI_LOGIN_DETECTED' });
+    }
+
+    req.user = {
+      userId: user.id,
+      email: user.email,
+      supabaseId: payload.sub,
+    };
+    req.deviceId = deviceId;
+
+    next();
+  } catch (error: any) {
+    console.error(`[auth] verifyToken gagal [${error.name}]: ${error.message}`);
+    return res.status(401).json({ error: 'INVALID_TOKEN' });
+  }
+};
 
 export async function checkMembership(
   req: Request,
@@ -125,10 +199,7 @@ export async function checkMembership(
           where: { isActive: true },
           orderBy: { endDate: 'desc' },
           take: 1,
-          select: {
-            endDate: true,
-            isActive: true,
-          },
+          select: { endDate: true, isActive: true },
         },
       },
     });
@@ -142,22 +213,42 @@ export async function checkMembership(
       return;
     }
 
-    // Admin bypass
+    // ── 1. ADMIN selalu lolos ────────────────────────────
     if (user.role === 'ADMIN') {
-      req.user = { userId: user.id, role: 'ADMIN', status: 'ACTIVE' };
+      req.user = { ...req.user, userId: user.id, role: 'ADMIN', status: 'ACTIVE' };
       next();
       return;
     }
 
+    // ── 2. User status ACTIVE → bisa akses semua layanan ─
+    //    Status ACTIVE di-set oleh webhook setelah pembayaran sukses.
+    //    Ini adalah sumber kebenaran utama (primary gate).
+    if (user.status === 'ACTIVE') {
+      req.user = { ...req.user, userId: user.id, role: user.role, status: 'ACTIVE' };
+      next();
+      return;
+    }
+
+    // ── 3. Fallback: cek record membership (double-check) ─
+    //    Jika status belum ter-update tapi ternyata ada membership valid,
+    //    tetap loloskan dan otomatis perbaiki status user.
     const activeMembership = user.memberships[0];
     const now = new Date();
 
     if (activeMembership && activeMembership.endDate > now) {
-      req.user = { userId: user.id, role: user.role, status: 'ACTIVE' };
+      // Auto-fix: sinkronkan status user ke ACTIVE
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { status: 'ACTIVE' },
+      });
+      console.log(`[checkMembership] Auto-fix: user ${user.id} status → ACTIVE (membership valid)`);
+
+      req.user = { ...req.user, userId: user.id, role: user.role, status: 'ACTIVE' };
       next();
       return;
     }
 
+    // ── 4. Tidak ada akses → kirim 403 dengan detail ─────
     const statusMessages: Record<string, { message: string; code: string }> = {
       PENDING: {
         message: 'Pembayaran belum selesai. Selesaikan pembayaran untuk mengakses fitur premium.',
@@ -185,8 +276,6 @@ export async function checkMembership(
     next(error);
   }
 }
-
-// ─── 4. REQUIRE ADMIN ───────────────────────────────────
 
 export async function requireAdmin(
   req: Request,

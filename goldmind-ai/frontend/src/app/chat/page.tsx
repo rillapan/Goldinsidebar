@@ -3,6 +3,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { api } from '@/lib/api';
+import { Bot, AlertTriangle, Send } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -76,7 +77,7 @@ export default function ChatPage() {
       console.error(err);
       setMessages((prev) => [
         ...prev,
-        { id: `err-${Date.now()}`, role: 'assistant', content: '❌ Gagal mendapatkan respons AI. Coba lagi.', createdAt: new Date().toISOString() },
+        { id: `err-${Date.now()}`, role: 'assistant', content: 'Gagal mendapatkan respons AI. Coba lagi.', createdAt: new Date().toISOString() },
       ]);
     } finally {
       setSendingMsg(false);
@@ -109,8 +110,8 @@ export default function ChatPage() {
         {!activeSession ? (
           <div className="flex-1 flex items-center justify-center text-center p-8">
             <div>
-              <div className="text-5xl mb-4">🤖</div>
-              <h2 className="text-xl font-semibold mb-2">GoldMind AI Chat Assistant</h2>
+              <Bot className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold mb-2">SINYAL COHIBA Chat Assistant</h2>
               <p className="text-gray-500 text-sm mb-6 max-w-md">
                 Tanya apa saja tentang analisa XAUUSD. AI akan membaca data harga live dan memberikan analisa teknikal kontekstual.
               </p>
@@ -164,7 +165,7 @@ export default function ChatPage() {
                   Kirim
                 </button>
               </div>
-              <p className="text-xs text-gray-600 mt-2">⚠️ AI ini bukan rekomendasi investasi. Trading mengandung risiko tinggi.</p>
+              <p className="text-xs text-gray-600 mt-2 flex items-center gap-1.5"><AlertTriangle className="w-3.5 h-3.5" /> AI ini bukan rekomendasi investasi. Trading mengandung risiko tinggi.</p>
             </div>
           </>
         )}

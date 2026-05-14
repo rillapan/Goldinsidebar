@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Shared Type Definitions
+// SINYAL COHIBA — Shared Type Definitions
 // Digunakan oleh Frontend dan Backend
 // ═══════════════════════════════════════════════════════════
 

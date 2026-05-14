@@ -1,11 +1,12 @@
 // Payment Failed Redirect
 import Link from 'next/link';
+import { XCircle } from 'lucide-react';
 
 export default function PaymentFailedPage() {
   return (
     <main className="min-h-screen flex items-center justify-center px-4 bg-brand-dark">
       <div className="text-center glass-card p-12 max-w-md">
-        <div className="text-6xl mb-6">❌</div>
+        <XCircle className="w-16 h-16 text-red-400 mx-auto mb-6" />
         <h1 className="text-2xl font-bold mb-3">Pembayaran Gagal</h1>
         <p className="text-gray-400 mb-8">
           Terjadi masalah dengan pembayaran Anda. Silakan coba lagi.

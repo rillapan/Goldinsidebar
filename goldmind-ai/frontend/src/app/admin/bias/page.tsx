@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { Newspaper } from 'lucide-react';
 
 export default function AdminBiasPage() {
   const [biases, setBiases] = useState<any[]>([]);
@@ -30,7 +31,7 @@ export default function AdminBiasPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <h1 className="text-2xl font-bold">📰 Manajemen Daily Bias</h1>
+      <h1 className="text-2xl font-bold flex items-center gap-2"><Newspaper className="w-6 h-6 text-amber-400" /> Manajemen Daily Bias</h1>
       <div className="grid gap-4">
         {biases.map((b: any) => (
           <div key={b.id} className="glass-card p-5">

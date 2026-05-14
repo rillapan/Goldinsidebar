@@ -1,23 +1,42 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@/store/auth.store';
+import { createClient } from '@/utils/supabase/client';
+import { connectSocket } from '@/lib/socket';
+import { useI18n } from '@/lib/i18n';
+import { LanguageToggle } from '@/components/ui/language-toggle';
+import {
+  LayoutDashboard,
+  Zap,
+  Newspaper,
+  Bot,
+  UserCircle,
+  ShieldCheck,
+  LogOut,
+  Menu,
+  type LucideIcon,
+} from 'lucide-react';
 
-const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: '📊', desc: 'Overview & sinyal aktif' },
-  { href: '/signals', label: 'Sinyal', icon: '⚡', desc: 'Semua sinyal trading' },
-  { href: '/bias', label: 'Daily Bias', icon: '📰', desc: 'Analisa fundamental harian' },
-  { href: '/chat', label: 'AI Chat', icon: '🤖', desc: 'Tanya AI analyst' },
-  { href: '/profile', label: 'Profil', icon: '👤', desc: 'Akun & membership' },
-];
+const navIcons: LucideIcon[] = [LayoutDashboard, Zap, Newspaper, Bot, UserCircle];
+const navHrefs = ['/dashboard', '/signals', '/bias', '/chat', '/profile'];
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, isLoading, isAuthenticated, fetchUser, logout } = useAuthStore();
+  const { t } = useI18n();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Build nav items from translations
+  const navItems = t.dashboard.navItems.map((item, i) => ({
+    href: navHrefs[i],
+    label: item.label,
+    icon: navIcons[i],
+    desc: item.desc,
+  }));
 
   useEffect(() => {
     fetchUser();
@@ -27,19 +46,37 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     if (!isLoading && !isAuthenticated) {
       router.push('/login');
     }
-    if (!isLoading && user && user.status !== 'ACTIVE' && user.role !== 'ADMIN') {
-      if (pathname !== '/renew') {
-        router.push(user.status === 'PENDING' ? '/checkout' : '/renew');
+    // EXPIRED / SUSPENDED → halaman perpanjangan
+    // PENDING → tetap di dashboard, overlay upgrade muncul di konten
+    // ACTIVE → akses penuh ke semua fitur
+    if (!isLoading && user && user.role !== 'ADMIN') {
+      if (user.status === 'EXPIRED' && pathname !== '/renew') {
+        router.push('/renew');
+      }
+      if (user.status === 'SUSPENDED' && pathname !== '/renew') {
+        router.push('/renew');
       }
     }
   }, [isLoading, isAuthenticated, user, router, pathname]);
+
+  // Hubungkan socket setelah user terautentikasi.
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      const supabase = createClient();
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.access_token) {
+          connectSocket(session.access_token);
+        }
+      });
+    }
+  }, [isLoading, isAuthenticated]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-brand-dark flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-500 text-sm">Memuat dashboard...</p>
+          <p className="text-gray-500 text-sm">{t.dashboard.loadingText}</p>
         </div>
       </div>
     );
@@ -61,10 +98,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         {/* Logo */}
         <div className="p-5 border-b border-brand-border flex-shrink-0">
           <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-gold flex items-center justify-center shadow-[0_0_12px_rgba(245,158,11,0.3)] group-hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-shadow">
-              <span className="text-brand-dark font-black text-sm">G</span>
-            </div>
-            <span className="text-lg font-bold text-gradient-gold">GoldMind AI</span>
+            <img src="/img/logo.jpg" alt="Logo" className="h-8 w-auto object-contain" />
+            <span className="text-lg font-bold text-gradient-gold">SINYAL COHIBA</span>
           </Link>
         </div>
 
@@ -76,13 +111,13 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               : 'bg-red-500/10 border border-red-500/20 text-red-400'
           }`}>
             <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'ACTIVE' ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'}`} />
-            {user.status === 'ACTIVE' ? 'Membership Aktif' : 'Membership Tidak Aktif'}
+            {user.status === 'ACTIVE' ? t.dashboard.membershipActive : t.dashboard.membershipInactive}
           </div>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
-          <p className="text-gray-600 text-xs font-medium px-3 py-2 uppercase tracking-wider">Menu Utama</p>
+          <p className="text-gray-600 text-xs font-medium px-3 py-2 uppercase tracking-wider">{t.dashboard.mainMenu}</p>
 
           {navItems.map((item) => {
             const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
@@ -94,7 +129,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                     : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
               >
-                <span className="text-base flex-shrink-0">{item.icon}</span>
+                <item.icon className="w-5 h-5 flex-shrink-0" />
                 <div className="min-w-0">
                   <p className="font-medium leading-tight">{item.label}</p>
                   <p className={`text-xs leading-tight mt-0.5 ${isActive ? 'text-amber-400/60' : 'text-gray-600 group-hover:text-gray-500'}`}>
@@ -108,7 +143,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
 
           {user.role === 'ADMIN' && (
             <>
-              <p className="text-gray-600 text-xs font-medium px-3 py-2 uppercase tracking-wider mt-3">Admin</p>
+              <p className="text-gray-600 text-xs font-medium px-3 py-2 uppercase tracking-wider mt-3">{t.dashboard.admin}</p>
               <Link href="/admin" onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition-all duration-200 border ${
                   pathname.startsWith('/admin')
@@ -116,8 +151,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                     : 'text-gray-400 hover:text-white hover:bg-white/5 border-transparent'
                 }`}
               >
-                <span className="text-base">🛡️</span>
-                <span className="font-medium">Admin Panel</span>
+                <ShieldCheck className="w-5 h-5" />
+                <span className="font-medium">{t.dashboard.adminPanel}</span>
               </Link>
             </>
           )}
@@ -138,8 +173,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             onClick={() => logout().then(() => router.push('/login'))}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-500 hover:text-red-400 hover:bg-red-500/5 transition-all duration-200 group"
           >
-            <span className="text-base group-hover:scale-110 transition-transform">↩</span>
-            <span>Logout</span>
+            <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <span>{t.dashboard.logout}</span>
           </button>
         </div>
       </aside>
@@ -155,27 +190,26 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-brand-border text-gray-400 hover:text-white hover:border-amber-500/30 transition-all"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
+              <Menu className="w-4 h-4" />
             </button>
 
             {/* Page title */}
             <div className="flex items-center gap-2 flex-1">
-              <span className="lg:hidden text-sm font-bold text-gradient-gold">GoldMind AI</span>
+              <span className="lg:hidden text-sm font-bold text-gradient-gold">SINYAL COHIBA</span>
               {currentNav && (
                 <div className="hidden lg:flex items-center gap-2">
-                  <span className="text-base">{currentNav.icon}</span>
+                  {currentNav && <currentNav.icon className="w-5 h-5 text-amber-400" />}
                   <span className="text-sm font-semibold text-white">{currentNav.label}</span>
                 </div>
               )}
             </div>
 
-            {/* Header right — live indicator */}
+            {/* Header right — language toggle + live indicator */}
             <div className="flex items-center gap-3">
+              <LanguageToggle />
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-emerald-400 text-xs font-medium">Bot Aktif</span>
+                <span className="text-emerald-400 text-xs font-medium">{t.dashboard.botActive}</span>
               </div>
               <div className="w-8 h-8 rounded-full bg-gradient-gold flex items-center justify-center text-brand-dark font-black text-xs shadow-[0_0_8px_rgba(245,158,11,0.3)]">
                 {user.name.charAt(0).toUpperCase()}

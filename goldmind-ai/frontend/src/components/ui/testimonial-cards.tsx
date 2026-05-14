@@ -3,31 +3,7 @@
 import * as React from 'react';
 import { motion, type PanInfo } from 'motion/react';
 import { Star, Check } from 'lucide-react';
-
-// ─── Testimonial data ────────────────────────────────────────
-const TESTIMONIALS = [
-  {
-    id: 1,
-    testimonial:
-      "Sinyal XAUUSD tercepat yang pernah saya coba. Fitur 'Kenapa?' benar-benar membantu saya belajar analisa teknikal sambil profit.",
-    author: 'Budi Santoso',
-    role: 'Karyawan & Part-time Trader',
-  },
-  {
-    id: 2,
-    testimonial:
-      "Awalnya ragu dengan sinyal AI, tapi setelah coba free trial, win ratenya konsisten di atas 70%. Kalkulator lotnya sangat akurat.",
-    author: 'Andi Wijaya',
-    role: 'Full-time Trader',
-  },
-  {
-    id: 3,
-    testimonial:
-      "Sangat transparan. Setiap sinyal ada alasannya. Ini jauh lebih baik daripada grup VIP Telegram 'Master' yang pernah saya ikuti.",
-    author: 'Siti Rahma',
-    role: 'Retail Gold Investor',
-  },
-];
+import { useI18n } from '@/lib/i18n';
 
 type Position = 'front' | 'middle' | 'back';
 
@@ -38,10 +14,12 @@ interface CardProps {
   role: string;
   position: Position;
   handleShuffle: () => void;
+  cardSwipe: string;
+  verifiedTrader: string;
 }
 
 // ─── Single card ─────────────────────────────────────────────
-function TestimonialCard({ handleShuffle, testimonial, position, id, author, role }: CardProps) {
+function TestimonialCard({ handleShuffle, testimonial, position, id, author, role, cardSwipe, verifiedTrader }: CardProps) {
   const dragRef = React.useRef(0);
   const isFront = position === 'front';
 
@@ -107,14 +85,14 @@ function TestimonialCard({ handleShuffle, testimonial, position, id, author, rol
         <span className="text-xs text-gray-500">{role}</span>
         <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest text-emerald-400">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          Verified Trader
+          {verifiedTrader}
         </span>
       </div>
 
       {/* ── Swipe hint (front card only) ── */}
       {isFront && (
         <p className="text-center text-[10px] text-gray-600">
-          ← Geser untuk lanjut
+          {cardSwipe}
         </p>
       )}
     </motion.div>
@@ -123,6 +101,8 @@ function TestimonialCard({ handleShuffle, testimonial, position, id, author, rol
 
 // ─── ShuffleTestimonials — full section export ───────────────
 export function ShuffleTestimonials() {
+  const { t } = useI18n();
+  const testimonialItems = t.testimonials.items;
   const [positions, setPositions] = React.useState<Position[]>(['front', 'middle', 'back']);
 
   const handleShuffle = () => {
@@ -145,10 +125,10 @@ export function ShuffleTestimonials() {
         {/* ── Section heading ── */}
         <div className="mb-20 text-center">
           <span className="mb-3 block text-sm font-semibold uppercase tracking-widest text-amber-400">
-            Testimoni
+            {t.testimonials.tagline}
           </span>
           <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-            Dipercaya oleh{' '}
+            {t.testimonials.title1}
             <span
               className="bg-clip-text text-transparent"
               style={{
@@ -156,23 +136,28 @@ export function ShuffleTestimonials() {
                   'linear-gradient(135deg, #FFD700 0%, #f59e0b 50%, #d97706 100%)',
               }}
             >
-              Ratusan Trader Indonesia
+              {t.testimonials.titleGold}
             </span>
           </h2>
           <p className="mx-auto max-w-xl text-gray-400">
-            850+ trader aktif mempercayai GoldMind AI untuk analisa XAUUSD harian mereka.
+            {t.testimonials.subtitle}
           </p>
         </div>
 
         {/* ── Card stack ── */}
         <div className="grid place-content-center overflow-hidden">
           <div className="relative -ml-[100px] h-[420px] w-[320px] md:-ml-[175px] md:h-[450px] md:w-[350px]">
-            {TESTIMONIALS.map((t, i) => (
+            {testimonialItems.map((item, i) => (
               <TestimonialCard
-                key={t.id}
-                {...t}
+                key={i + 1}
+                id={i + 1}
+                testimonial={item.testimonial}
+                author={item.author}
+                role={item.role}
                 position={positions[i]}
                 handleShuffle={handleShuffle}
+                cardSwipe={t.testimonials.cardSwipe}
+                verifiedTrader={t.testimonials.verifiedTrader}
               />
             ))}
           </div>
@@ -180,7 +165,7 @@ export function ShuffleTestimonials() {
 
         {/* ── Swipe instruction ── */}
         <p className="mt-16 text-center text-xs text-gray-600">
-          ← Geser kartu untuk melihat testimoni berikutnya
+          {t.testimonials.swipeHint}
         </p>
       </div>
     </section>

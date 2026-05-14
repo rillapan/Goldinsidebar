@@ -4,8 +4,11 @@ import { ArrowRight, Rocket, TrendingUp } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { ContainerScroll } from "@/components/ui/container-scroll-animation";
+import { useI18n } from "@/lib/i18n";
 
 export const HeroSection = () => {
+  const { t } = useI18n();
+
   return (
     <div className="relative overflow-hidden" style={{ background: "#0a0e17" }}>
 
@@ -43,7 +46,7 @@ export const HeroSection = () => {
               >
                 <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Bot Aktif — Monitoring XAUUSD 24/5
+                  {t.hero.badge}
                 </span>
               </motion.div>
 
@@ -54,7 +57,7 @@ export const HeroSection = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
               >
-                Berhenti Menebak Arah Emas.{" "}
+                {t.hero.headline1}
                 <span
                   className="bg-clip-text text-transparent"
                   style={{
@@ -62,9 +65,9 @@ export const HeroSection = () => {
                       "linear-gradient(135deg, #FFD700 0%, #f59e0b 50%, #d97706 100%)",
                   }}
                 >
-                  Trading Lebih Cerdas
-                </span>{" "}
-                dengan Sinyal AI.
+                  {t.hero.headlineGold}
+                </span>
+                {t.hero.headline2}
               </motion.h1>
 
               {/* Subheadline */}
@@ -74,7 +77,7 @@ export const HeroSection = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: "easeOut", delay: 0.25 }}
               >
-                Dapatkan sinyal XAUUSD real-time dengan akurasi teruji langsung di Telegram Anda.
+                {t.hero.subheadline}
               </motion.p>
 
               {/* CTA Buttons */}
@@ -89,13 +92,13 @@ export const HeroSection = () => {
                   className="flex h-14 w-full items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-8 text-base font-bold text-black shadow-[0_0_40px_rgba(245,158,11,0.35)] transition-all hover:from-amber-400 hover:to-amber-500 hover:shadow-[0_0_60px_rgba(245,158,11,0.55)] active:scale-95 sm:w-auto"
                 >
                   <Rocket className="h-5 w-5" strokeWidth={2} />
-                  Mulai Free Trial 7 Hari
+                  {t.hero.cta}
                 </Link>
                 <a
                   href="#how-it-works"
                   className="flex h-14 w-full items-center justify-center gap-2 rounded-full border border-gray-700 px-8 text-base font-medium text-gray-300 transition-all hover:border-amber-500/30 hover:bg-amber-500/5 hover:text-white sm:w-auto"
                 >
-                  Cara Kerja
+                  {t.hero.howItWorks}
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </motion.div>
@@ -116,7 +119,7 @@ export const HeroSection = () => {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80"
-              alt="GoldMind AI — Platform Sinyal Trading XAUUSD"
+              alt="SINYAL COHIBA — Platform Sinyal Trading XAUUSD"
               className="h-full w-full object-cover object-top"
               style={{ filter: "brightness(0.75) saturate(1.1) sepia(15%)" }}
             />
@@ -135,16 +138,16 @@ export const HeroSection = () => {
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    BUY AKTIF
+                    {t.hero.buyActive}
                   </span>
                   <span className="text-[10px] text-white/35">M15</span>
                 </div>
                 <p className="font-mono text-base font-bold text-white sm:text-lg">$3,248.50</p>
                 <div className="mt-1.5 flex items-center gap-2">
                   <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-                    <div className="h-full w-[91%] rounded-full bg-emerald-400" />
+                    <div className="h-full w-[78%] rounded-full bg-emerald-400" />
                   </div>
-                  <span className="text-[10px] font-semibold text-emerald-400">91%</span>
+                  <span className="text-[10px] font-semibold text-emerald-400">AI</span>
                 </div>
               </div>
             </motion.div>

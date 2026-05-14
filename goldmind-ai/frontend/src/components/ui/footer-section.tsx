@@ -5,60 +5,44 @@ import type { ComponentProps, ReactNode } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Zap, Send, Instagram, Youtube, Facebook } from 'lucide-react';
 import Link from 'next/link';
-
-// ─── Types ────────────────────────────────────────────────────
-interface FooterLink {
-  title: string;
-  href: string;
-  icon?: React.ComponentType<{ className?: string }>;
-}
-
-interface FooterCol {
-  label: string;
-  links: FooterLink[];
-}
-
-// ─── GoldMind AI footer nav ───────────────────────────────────
-const footerLinks: FooterCol[] = [
-  {
-    label: 'Platform',
-    links: [
-      { title: 'AI Signal Engine',   href: '#features' },
-      { title: 'Daily Market Bias',  href: '#features' },
-      { title: 'AI Chat Assistant',  href: '#features' },
-      { title: 'Analytics & Win Rate', href: '#features' },
-    ],
-  },
-  {
-    label: 'Perusahaan',
-    links: [
-      { title: 'Testimoni Member', href: '#testimonials' },
-      { title: 'Cara Kerja AI',    href: '#how-it-works' },
-      { title: 'FAQ',              href: '#faq' },
-      { title: 'Harga',            href: '#pricing' },
-    ],
-  },
-  {
-    label: 'Legal',
-    links: [
-      { title: 'Syarat & Ketentuan', href: '#' },
-      { title: 'Kebijakan Privasi',  href: '#' },
-      { title: 'Hubungi Kami',       href: '#' },
-    ],
-  },
-  {
-    label: 'Ikuti Kami',
-    links: [
-      { title: 'Telegram',   href: '#', icon: Send },
-      { title: 'Instagram',  href: '#', icon: Instagram },
-      { title: 'YouTube',    href: '#', icon: Youtube },
-      { title: 'Facebook',   href: '#', icon: Facebook },
-    ],
-  },
-];
+import { useI18n } from '@/lib/i18n';
 
 // ─── Footer ───────────────────────────────────────────────────
 export function FooterSection() {
+  const { t } = useI18n();
+
+  // Build footer columns from translations
+  const platformLinks = [
+    { title: 'AI Signal Engine',   href: '#features' },
+    { title: 'Daily Market Bias',  href: '#features' },
+    { title: 'AI Chat Assistant',  href: '#features' },
+    { title: 'Analytics & Win Rate', href: '#features' },
+  ];
+
+  const companyLinks = t.footer.companyLinks.map((title, i) => ({
+    title,
+    href: ['#testimonials', '#how-it-works', '#faq', '#pricing'][i],
+  }));
+
+  const legalLinks = t.footer.legalLinks.map((title) => ({
+    title,
+    href: '#',
+  }));
+
+  const socialLinks = [
+    { title: 'Telegram',   href: '#', icon: Send },
+    { title: 'Instagram',  href: '#', icon: Instagram },
+    { title: 'YouTube',    href: '#', icon: Youtube },
+    { title: 'Facebook',   href: '#', icon: Facebook },
+  ];
+
+  const footerSections = [
+    { label: t.footer.columns.platform, links: platformLinks },
+    { label: t.footer.columns.company, links: companyLinks },
+    { label: t.footer.columns.legal, links: legalLinks },
+    { label: t.footer.columns.followUs, links: socialLinks },
+  ];
+
   return (
     <footer className="relative w-full border-t border-brand-border bg-[radial-gradient(35%_128px_at_50%_0%,rgba(245,158,11,0.07),transparent)] px-6 py-12 lg:py-16">
       {/* Glow line at top edge */}
@@ -71,12 +55,7 @@ export function FooterSection() {
           <AnimatedContainer className="space-y-4">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-full shadow-[0_0_14px_rgba(245,158,11,0.4)]"
-                style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
-              >
-                <Zap className="h-4 w-4 text-black" strokeWidth={2.5} />
-              </div>
+              <img src="/img/logo.jpg" alt="Logo" className="h-8 w-auto object-contain" />
               <span
                 className="text-lg font-bold"
                 style={{
@@ -85,31 +64,30 @@ export function FooterSection() {
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                GoldMind AI
+                SINYAL COHIBA
               </span>
             </Link>
 
             {/* Tagline */}
-            <p className="text-sm leading-relaxed text-gray-500">
-              Platform sinyal trading XAUUSD berbasis AI untuk trader Indonesia.
-              Analisa cerdas, profit lebih konsisten.
+            <p className="text-sm leading-relaxed text-gray-500 whitespace-pre-line">
+              {t.footer.tagline}
             </p>
 
             {/* Live stat */}
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              850+ trader aktif hari ini
+              {t.footer.liveTraders}
             </div>
 
             {/* Copyright */}
             <p className="text-xs text-gray-600">
-              © {new Date().getFullYear()} GoldMind AI. All rights reserved.
+              © {new Date().getFullYear()} SINYAL COHIBA. All rights reserved.
             </p>
           </AnimatedContainer>
 
           {/* ── Nav columns ── */}
           <div className="mt-10 grid grid-cols-2 gap-8 md:grid-cols-4 xl:col-span-2 xl:mt-0">
-            {footerLinks.map((section, index) => (
+            {footerSections.map((section, index) => (
               <AnimatedContainer key={section.label} delay={0.1 + index * 0.1}>
                 <div className="mb-10 md:mb-0">
                   <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500">
@@ -117,7 +95,7 @@ export function FooterSection() {
                   </h3>
                   <ul className="mt-4 space-y-2.5 text-sm">
                     {section.links.map((link) => {
-                      const LinkIcon = link.icon;
+                      const LinkIcon = 'icon' in link ? (link as any).icon : undefined;
                       return (
                         <li key={link.title}>
                           <a
@@ -139,9 +117,8 @@ export function FooterSection() {
 
         {/* ── Bottom disclaimer ── */}
         <div className="mt-12 border-t border-brand-border pt-6">
-          <p className="text-center text-xs leading-relaxed text-gray-700">
-            Trading mengandung risiko. Past performance bukan jaminan profit di masa depan.
-            Gunakan risk management yang baik dan hanya trading dengan modal yang siap hilang.
+          <p className="text-center text-xs leading-relaxed text-gray-700 whitespace-pre-line">
+            {t.footer.disclaimer}
           </p>
         </div>
       </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Rocket } from "lucide-react";
 
 // ─── Data statistik utama ─────────────────────────────────
 const stats = [
@@ -90,7 +90,7 @@ export default function HeroSection() {
 
           {/* Subheading */}
           <p className="mx-auto mb-10 max-w-2xl text-lg leading-relaxed text-white/55 md:text-xl">
-            GoldMind AI menganalisa XAUUSD setiap 5 menit menggunakan 7+ indikator
+            SINYAL COHIBA menganalisa XAUUSD setiap 5 menit menggunakan 7+ indikator
             teknikal dan berita fundamental — hasilkan sinyal BUY/SELL dengan win rate
             tertinggi untuk trader Indonesia.
           </p>
@@ -101,7 +101,7 @@ export default function HeroSection() {
               href="/register"
               className="neumorphic-button-gold relative w-full overflow-hidden rounded-full border border-amber-500/20 bg-gradient-to-b from-amber-500/15 to-amber-600/8 px-8 py-4 text-amber-300 shadow-lg transition-all duration-300 hover:border-amber-500/40 hover:shadow-[0_0_28px_rgba(245,158,11,0.35)] hover:text-amber-200 sm:w-auto"
             >
-              🚀 Bergabung Sekarang — Rp 299K/bulan
+              <span className="flex items-center justify-center gap-2"><Rocket className="h-4 w-4" /> Bergabung Sekarang — Rp 299K/bulan</span>
             </Link>
             <a
               href="#how-it-works"
@@ -171,7 +171,7 @@ export default function HeroSection() {
 
             <Image
               src="https://blocks.mvp-subha.me/assets/lunexa-db.png"
-              alt="GoldMind AI Dashboard — sinyal XAUUSD real-time"
+              alt="SINYAL COHIBA Dashboard — sinyal XAUUSD real-time"
               width={1920}
               height={1080}
               className="h-auto w-full"

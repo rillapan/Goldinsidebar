@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/auth.store';
 import { api } from '@/lib/api';
+import { UserCircle } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user } = useAuthStore();
@@ -28,7 +29,7 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-6 animate-fade-in max-w-3xl">
-      <h1 className="text-2xl font-bold">👤 Profil</h1>
+      <h1 className="text-2xl font-bold flex items-center gap-2"><UserCircle className="w-6 h-6 text-amber-400" /> Profil</h1>
 
       {/* User Info */}
       <div className="glass-card p-6">

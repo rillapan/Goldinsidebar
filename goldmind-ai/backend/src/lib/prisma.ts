@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════
-// GoldMind AI — Prisma Client Singleton
+// SINYAL COHIBA — Prisma Client Singleton
 // Mencegah multiple instance di development (hot reload)
 // ═══════════════════════════════════════════════════════════
 
