@@ -69,8 +69,34 @@
   html.light .hover\:text-white:hover  { color: #1E2329; }
   html.light .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.05); }
 
-  /* btn-gold: text-brand-dark in light mode would be near-white; keep it dark */
-  html.light .btn-gold { color: #1c1917; }
+  /* btn-gold: use deep gold background in light mode per spec */
+  html.light .btn-gold {
+    background: linear-gradient(135deg, #C99400 0%, #a07800 100%);
+    color: #FFFFFF;
+  }
+
+  /* Status colors — light mode spec overrides */
+  /* BUY / Profit: Forest Green #03A66D */
+  html.light .text-emerald-400,
+  html.light .text-emerald-300 { color: #03A66D; }
+  html.light .badge-buy {
+    background-color: rgb(3 166 109 / 0.15);
+    color: #03A66D;
+    border-color: rgb(3 166 109 / 0.3);
+  }
+
+  /* SELL / Loss: Crimson Red #CF304A */
+  html.light .text-red-400,
+  html.light .text-red-300     { color: #CF304A; }
+  html.light .badge-sell {
+    background-color: rgb(207 48 74 / 0.15);
+    color: #CF304A;
+    border-color: rgb(207 48 74 / 0.3);
+  }
+
+  /* Primary gold in light mode — amber utilities */
+  html.light .text-amber-400,
+  html.light .text-amber-300   { color: #C99400; }
 
   /* Custom scrollbar */
   ::-webkit-scrollbar { width: 6px; }
