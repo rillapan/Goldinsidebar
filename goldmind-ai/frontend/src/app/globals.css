@@ -51,21 +51,22 @@
   }
 
   body {
-    @apply bg-brand-dark text-gray-100 font-sans antialiased;
+    @apply bg-brand-dark font-sans antialiased;
+    color: #EAECEF; /* spec: Off-White — not text-gray-100 (#f3f4f6) */
   }
 
   /* ── Light mode text overrides ───────────────────────── */
   /* Tailwind gray utilities are hardcoded hex, so we override them here */
-  html.light body                    { color: #1e293b; }
-  html.light .text-white             { color: #0f172a; }
-  html.light .text-gray-100          { color: #1e293b; }
-  html.light .text-gray-300          { color: #374151; }
-  html.light .text-gray-400          { color: #64748b; }
-  html.light .text-gray-500          { color: #94a3b8; }
-  html.light .text-gray-600          { color: #9ca3af; }
+  html.light body                    { color: #1E2329; } /* spec: Dark Grey */
+  html.light .text-white             { color: #1E2329; } /* spec: Dark Grey */
+  html.light .text-gray-100          { color: #1E2329; }
+  html.light .text-gray-300          { color: #2B3139; }
+  html.light .text-gray-400          { color: #474D57; }
+  html.light .text-gray-500          { color: #707A8A; }
+  html.light .text-gray-600          { color: #848E9C; }
 
   /* Hover states that would become invisible on light bg */
-  html.light .hover\:text-white:hover  { color: #0f172a; }
+  html.light .hover\:text-white:hover  { color: #1E2329; }
   html.light .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.05); }
 
   /* btn-gold: text-brand-dark in light mode would be near-white; keep it dark */
