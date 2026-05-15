@@ -13,14 +13,18 @@ model User {
   email          String        @unique
   name           String
   phone          String
-  telegramId     String?       @map("telegram_id")
-  role           UserRole      @default(MEMBER)
-  status         UserStatus    @default(PENDING)
-  activeDeviceId String?       @map("active_device_id")
-  lastLoginAt    DateTime?     @map("last_login_at")
-  lastLoginIp    String?       @map("last_login_ip")
-  createdAt      DateTime      @default(now()) @map("created_at")
-  updatedAt      DateTime      @updatedAt @map("updated_at")
+  telegramId          String?       @unique @map("telegram_id")
+  telegramUsername    String?       @map("telegram_username")
+  telegramConnected   Boolean       @default(false) @map("telegram_connected")
+  telegramSettings    Json?         @map("telegram_settings")
+  telegramVerifyToken String?       @unique @map("telegram_verify_token")
+  role                UserRole      @default(MEMBER)
+  status              UserStatus    @default(PENDING)
+  activeDeviceId      String?       @map("active_device_id")
+  lastLoginAt         DateTime?     @map("last_login_at")
+  lastLoginIp         String?       @map("last_login_ip")
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
   chatSessions   ChatSession[]
   memberships    Membership[]
   transactions   Transaction[]

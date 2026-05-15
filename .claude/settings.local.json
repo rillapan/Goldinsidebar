@@ -45,7 +45,9 @@
       "Bash(python3 -c ' *)",
       "Bash(xargs grep -l \"connectSocket\")",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(dir \"C:\\\\Goldmind\\\\GoldInsidebar\\\\claude\\\\user-main-desaign\\\\intruksi\\\\\")",
+      "PowerShell(python -c \"import websockets; print\\(websockets.__version__\\)\")"
     ]
   }
 }

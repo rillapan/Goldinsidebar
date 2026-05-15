@@ -48,13 +48,28 @@ export function setupCronJobs(): void {
       const now = new Date();
 
       // Nonaktifkan membership yang sudah melewati endDate
-      const expired = await prisma.membership.updateMany({
+      const expiredMemberships = await prisma.membership.findMany({
         where: { isActive: true, endDate: { lte: now } },
-        data: { isActive: false },
+        include: { user: true }
       });
 
-      if (expired.count > 0) {
-        console.log(`⏰ [CRON] ${expired.count} membership kedaluwarsa dinonaktifkan`);
+      if (expiredMemberships.length > 0) {
+        console.log(`⏰ [CRON] ${expiredMemberships.length} membership kedaluwarsa dinonaktifkan`);
+
+        for (const m of expiredMemberships) {
+          await prisma.membership.update({
+            where: { id: m.id },
+            data: { isActive: false }
+          });
+
+          // Kick dari Telegram Channel jika terhubung
+          if (m.user.telegramConnected && m.user.telegramId) {
+            import('../services/telegram.service').then(({ TelegramService }) => {
+              TelegramService.kickUserFromChannel(m.user.telegramId!);
+              TelegramService.sendDirectMessage(m.user.telegramId!, 'Langganan Anda telah berakhir. Anda dikeluarkan dari channel VIP. Silakan perpanjang langganan untuk kembali bergabung.');
+            });
+          }
+        }
 
         // Update status user menjadi EXPIRED jika tidak punya membership aktif lain
         await prisma.$executeRaw`

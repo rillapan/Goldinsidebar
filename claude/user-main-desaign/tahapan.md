@@ -98,7 +98,7 @@ XENDIT_CALLBACK_TOKEN=
 JWT_SECRET=dev-secret-minimum-32-chars-untuk-jwt
 ```
 
-#### 1C. Setup AI Engine `.env`
+#### 1C. Setup AI Engine `.env`    | selesai ✅
 
 File: `goldmind-ai/ai-engine/.env`
 
