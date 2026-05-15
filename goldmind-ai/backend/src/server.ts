@@ -29,6 +29,7 @@ import webhookRoutes  from './routes/webhook.routes';
 import internalRoutes from './routes/internal.routes';
 import journalRoutes   from './routes/journal.routes';
 import telegramRoutes  from './routes/telegram.routes';
+import marketRoutes    from './routes/market.routes';
 
 import { errorHandler } from './middleware/error.middleware';
 
@@ -101,6 +102,7 @@ app.use('/api/admin',    adminRoutes);
 app.use('/api/internal', internalRoutes);
 app.use('/api/journal',   journalRoutes);
 app.use('/api/telegram',  telegramRoutes);
+app.use('/api/market',    marketRoutes);
 
 app.get('/api/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', service: 'goldmind-backend', timestamp: new Date().toISOString() });

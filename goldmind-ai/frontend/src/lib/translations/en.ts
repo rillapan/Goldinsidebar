@@ -293,9 +293,11 @@ const en = {
     navItems: [
       { label: 'Dashboard', desc: 'Overview & active signals' },
       { label: 'Signals', desc: 'All trading signals' },
+      { label: 'Live Market', desc: 'XAUUSD real-time price' },
       { label: 'Daily Bias', desc: 'Daily fundamental analysis' },
       { label: 'AI Chat', desc: 'Ask AI analyst' },
       { label: 'Journal', desc: 'Log & analyze trades' },
+      { label: 'Telegram', desc: 'Notification integration' },
       { label: 'Profile', desc: 'Account & membership' },
     ],
     xauusd: 'XAUUSD Spot',

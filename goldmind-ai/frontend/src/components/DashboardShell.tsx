@@ -18,6 +18,7 @@ import {
   BookOpen,
   Send,
   UserCircle,
+  TrendingUp,
   ShieldCheck,
   LogOut,
   Menu,
@@ -39,8 +40,8 @@ const labelVariants = {
 
 const transition = { type: 'tween', ease: 'easeOut', duration: 0.2 } as const;
 
-const navIcons: LucideIcon[] = [LayoutDashboard, Zap, Newspaper, Bot, BookOpen, Send, UserCircle];
-const navHrefs = ['/dashboard', '/signals', '/bias', '/chat', '/journal', '/telegram', '/profile'];
+const navIcons: LucideIcon[] = [LayoutDashboard, Zap, TrendingUp, Newspaper, Bot, BookOpen, Send, UserCircle];
+const navHrefs = ['/dashboard', '/signals', '/livemarket', '/bias', '/chat', '/journal', '/telegram', '/profile'];
 
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const router   = useRouter();

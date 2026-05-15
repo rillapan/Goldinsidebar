@@ -107,6 +107,27 @@ export interface ChatMessage {
   createdAt: string;
 }
 
+// ─── MARKET / LIVE PRICE ─────────────────────────────────
+
+export interface PriceData {
+  symbol: string;
+  price?: number;
+  close?: number;
+  open?: number;
+  high?: number;
+  low?: number;
+  timestamp: string;
+  day_change?: number;
+}
+
+export interface MarketStatus {
+  status: 'live' | 'stale';
+  price: number | null;
+  priceIDR: number | null;
+  timestamp: string | null;
+  staleSeconds: number;
+}
+
 // ─── API RESPONSES ──────────────────────────────────────
 
 export interface ApiResponse<T = unknown> {

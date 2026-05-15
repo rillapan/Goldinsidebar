@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { getSocket, reconnectSocket } from '@/lib/socket';
 import { useAuthStore } from '@/store/auth.store';
+import { USD_TO_IDR } from '@/lib/constants';
+import { LiveMarketMiniWidget } from '@/components/livemarket/MiniWidget';
 import { createClient } from '@/utils/supabase/client';
 import { useI18n } from '@/lib/i18n';
 import {
@@ -39,10 +41,6 @@ interface Bias {
   reasoning: string;
   date: string;
 }
-
-// Estimasi untuk 0.01 lot XAUUSD (1 oz). Kurs USD/IDR adalah pendekatan —
-// angka ini tidak dipakai untuk keputusan trading, hanya ilustrasi.
-const USD_TO_IDR = 16300;
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -547,6 +545,11 @@ export default function DashboardPage() {
           {!isLocked && <ConfidenceBar value={todayBias?.confidence ?? 0} />}
         </div>
       </div>
+
+      {/* ── Live Market Mini Widget ── */}
+      {!isLocked && (
+        <LiveMarketMiniWidget livePrice={livePrice} />
+      )}
 
       {/* ── Daily Bias ── */}
       {isLocked ? (

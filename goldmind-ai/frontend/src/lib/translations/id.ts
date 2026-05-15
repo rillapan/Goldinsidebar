@@ -293,6 +293,7 @@ const id = {
     navItems: [
       { label: 'Dashboard', desc: 'Overview & sinyal aktif' },
       { label: 'Sinyal', desc: 'Semua sinyal trading' },
+      { label: 'Live Market', desc: 'Harga XAUUSD real-time' },
       { label: 'Daily Bias', desc: 'Analisa fundamental harian' },
       { label: 'AI Chat', desc: 'Tanya AI analyst' },
       { label: 'Jurnal', desc: 'Catat & analisa trade' },

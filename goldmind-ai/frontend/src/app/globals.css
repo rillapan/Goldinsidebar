@@ -108,6 +108,19 @@
   html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 }
 
+@keyframes flash-green {
+  0%, 100% { color: inherit; text-shadow: none; }
+  20%       { color: #03A66D; text-shadow: 0 0 12px rgba(3, 166, 109, 0.7); }
+}
+
+@keyframes flash-red {
+  0%, 100% { color: inherit; text-shadow: none; }
+  20%       { color: #CF304A; text-shadow: 0 0 12px rgba(207, 48, 74, 0.7); }
+}
+
+.flash-green { animation: flash-green 0.6s ease-out forwards; }
+.flash-red   { animation: flash-red   0.6s ease-out forwards; }
+
 @layer components {
   /* Glass card effect */
   .glass-card {
