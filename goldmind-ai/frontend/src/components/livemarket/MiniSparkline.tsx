@@ -14,6 +14,8 @@ export function MiniSparkline({ candles, livePrice, height = 80, color = '#F0B90
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef     = useRef<any>(null);
   const lineRef      = useRef<any>(null);
+  // Track Unix-seconds dari data point terakhir yang sudah dirender
+  const lastTimeRef  = useRef<number>(0);
 
   // Inisialisasi chart saat candles pertama kali tersedia
   useEffect(() => {
@@ -56,13 +58,18 @@ export function MiniSparkline({ candles, livePrice, height = 80, color = '#F0B90
 
       const data = candles
         .map((c) => ({
-          time: Math.floor(new Date(c.timestamp).getTime() / 1000) as any,
+          time: Math.floor(new Date(c.timestamp).getTime() / 1000) as number,
           value: (c.close || c.price || 0) as number,
         }))
-        .filter((d) => d.value > 0)
-        .sort((a, b) => a.time - b.time);
+        .filter((d) => d.value > 0 && Number.isFinite(d.time))
+        .sort((a, b) => a.time - b.time)
+        // Deduplicate: TradingView tidak menerima dua titik dengan time sama
+        .filter((d, i, arr) => i === 0 || d.time > arr[i - 1].time);
 
-      if (data.length > 0) series.setData(data);
+      if (data.length > 0) {
+        series.setData(data as any);
+        lastTimeRef.current = data[data.length - 1].time;
+      }
 
       chartRef.current = chart;
       lineRef.current  = series;
@@ -74,17 +81,24 @@ export function MiniSparkline({ candles, livePrice, height = 80, color = '#F0B90
         chartRef.current.remove();
         chartRef.current = null;
         lineRef.current  = null;
+        lastTimeRef.current = 0;
       }
     };
   }, [candles, height, color]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Append harga live sebagai titik baru tanpa re-render seluruh chart
+  // Append harga live tanpa re-render seluruh chart.
+  // TradingView mengharuskan time selalu maju — jika nowSec ≤ lastTime, skip.
   useEffect(() => {
     if (!lineRef.current || livePrice == null) return;
-    lineRef.current.update({
-      time: Math.floor(Date.now() / 1000) as any,
-      value: livePrice,
-    });
+    const nowSec = Math.floor(Date.now() / 1000);
+    // Pastikan time selalu lebih besar dari titik terakhir
+    const newTime = nowSec > lastTimeRef.current ? nowSec : lastTimeRef.current + 1;
+    try {
+      lineRef.current.update({ time: newTime as any, value: livePrice });
+      lastTimeRef.current = newTime;
+    } catch {
+      // Silent: bisa terjadi saat chart sedang di-destroy
+    }
   }, [livePrice]);
 
   return <div ref={containerRef} style={{ width: '100%', height }} />;
