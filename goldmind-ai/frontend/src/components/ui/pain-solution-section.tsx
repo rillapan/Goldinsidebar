@@ -49,22 +49,25 @@ export function PainSolutionSection() {
   }, [tab]);
 
   useEffect(() => {
-    const step = 100 / (AUTO_PLAY_MS / 100);
+    const totalTicks = AUTO_PLAY_MS / 100;
+    let ticks = 0;
+
     const id = setInterval(() => {
-      setProgress((prev) => {
-        if (prev + step >= 100) {
-          setActiveIdx((i) => {
-            const next = i + 1;
-            if (next >= items.length) {
-              setTab((t) => (t === 'problem' ? 'solution' : 'problem'));
-              return 0;
-            }
-            return next;
-          });
-          return 0;
-        }
-        return prev + step;
-      });
+      ticks += 1;
+      if (ticks >= totalTicks) {
+        ticks = 0;
+        setProgress(0);
+        setActiveIdx((i) => {
+          const next = i + 1;
+          if (next >= items.length) {
+            setTab((t) => (t === 'problem' ? 'solution' : 'problem'));
+            return 0;
+          }
+          return next;
+        });
+      } else {
+        setProgress((ticks / totalTicks) * 100);
+      }
     }, 100);
     return () => clearInterval(id);
   }, [items.length, tab]);

@@ -10,6 +10,7 @@ import { PricingSection } from '@/components/ui/pricing-section';
 import { FooterSection } from '@/components/ui/footer-section';
 import { PainSolutionSection } from '@/components/ui/pain-solution-section';
 import { UrgencyBand } from '@/components/ui/urgency-band';
+import { LotCalculator } from '@/components/ui/lot-calculator';
 import { useI18n } from '@/lib/i18n';
 
 
@@ -84,6 +85,9 @@ export default function LandingPage() {
 
       {/* ── FEATURES ── */}
       <FeaturesSection />
+
+      {/* ── LOT CALCULATOR ── */}
+      <LotCalculator />
 
       {/* ── TESTIMONIALS ── */}
       <ShuffleTestimonials />
