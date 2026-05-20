@@ -25,7 +25,7 @@ const en = {
       { title: 'How It Works', description: 'How our AI analyzes XAUUSD every 5 minutes' },
     ],
     aboutLinks2: ['Terms & Conditions', 'Privacy Policy', 'Contact Us'],
-    dropdownNote: 'Powered by Claude AI — 7 technical indicators, real-time.',
+    dropdownNote: 'Powered by advanced AI — 7 technical indicators, real-time.',
     dropdownCta: 'Start free trial →',
   },
 
@@ -44,7 +44,7 @@ const en = {
   // ─── Stats Bar ────────────────────────────────────────────
   stats: {
     items: [
-      { label: 'AI Model', value: 'Claude', sub: 'Latest Anthropic AI' },
+      { label: 'AI Model', value: 'Advanced', sub: 'Latest & trained AI' },
       { label: 'Indicators', value: '7', sub: 'RSI, MACD, EMA, BB, ATR' },
       { label: 'Monitoring', value: '24/5', sub: 'Following forex market hours' },
       { label: 'Notification', value: '<30s', sub: 'WA + Telegram + Dashboard' },
@@ -99,7 +99,7 @@ const en = {
     statsRow: [
       { label: 'Indicators', value: '7+' },
       { label: 'Update', value: '5 min' },
-      { label: 'AI Model', value: 'Claude' },
+      { label: 'AI Model', value: 'Advanced' },
     ],
   },
 
@@ -156,7 +156,7 @@ const en = {
       '30-day signal analytics & history',
       'Transparent win rate & track record',
     ],
-    poweredBy: 'Powered by Anthropic AI',
+    poweredBy: 'Powered by Advanced AI',
     aiModel: 'Latest AI model for market analysis',
     monitoring: 'Automatic monitoring',
     monitoringDetail: 'XAUUSD analysis every 5 minutes',
@@ -179,7 +179,7 @@ const en = {
     items: [
       {
         q: 'How accurate are SINYAL COHIBA signals?',
-        a: "SINYAL COHIBA uses Anthropic's Claude model to analyze 7 technical indicators in real-time. Signal quality depends on market conditions. Trading always carries risk — use proper risk management and don't trade beyond your capital capacity.",
+        a: "SINYAL COHIBA uses advanced AI to analyze 7 technical indicators in real-time. Signal quality depends on market conditions. Trading always carries risk — use proper risk management and don't trade beyond your capital capacity.",
       },
       {
         q: 'Can I access it from my phone?',
@@ -199,7 +199,7 @@ const en = {
   // ─── Final CTA ────────────────────────────────────────────
   cta: {
     title: 'Ready to Trade Smarter?',
-    subtitle: 'Automated XAUUSD analysis powered by Claude AI — BUY/SELL signals straight to your WhatsApp and Telegram, 24/5.',
+    subtitle: 'Automated XAUUSD analysis with advanced AI — BUY/SELL signals straight to your WhatsApp and Telegram, 24/5.',
     button: 'Join Now — Rp 299K/month',
     note: 'No contract. Cancel anytime.',
   },
@@ -219,14 +219,89 @@ const en = {
     legalLinks: ['Terms & Conditions', 'Privacy Policy', 'Contact Us'],
   },
 
+  // ─── Problem / Solution Section ──────────────────────────
+  problemSolution: {
+    header: 'Why Change Now?',
+    title: 'From Challenge to Solution',
+    subtitle: 'The XAUUSD market moves too fast to navigate alone. We understand the problems — and we have the answers.',
+    problemsLabel: 'Problems',
+    solutionsLabel: 'Solutions',
+    problemTag: 'Trader Problems',
+    solutionTag: 'GoldMind Solutions',
+    learnMore: 'See Pricing Plans →',
+    problems: [
+      {
+        title: 'Non-Transparent Signals',
+        description: 'Following a mentor whose entry rationale is never clear — you never know when to enter, exit, or why.',
+        painPoints: [
+          'No idea what analysis backs each entry call',
+          "Signal info spreads slowly — you're often already too late",
+          'No accountability when signals turn out to be wrong',
+        ],
+      },
+      {
+        title: 'Emotion-Driven Trading',
+        description: 'Without a clear system, trading decisions are controlled by fear, greed, and FOMO.',
+        painPoints: [
+          'Entries based on gut feeling, not technical data',
+          'Delayed cut-loss because "the market will surely reverse"',
+          'Small profits taken fast while floating losses are left to grow',
+        ],
+      },
+      {
+        title: 'Always Missing the Market',
+        description: "XAUUSD moves 24/5. Without automated monitoring, you're always one step behind.",
+        painPoints: [
+          'Impossible to watch charts 24 hours a day',
+          "Good setups are missed when you're away from the screen",
+          'Late execution means entering after price has already moved far',
+        ],
+      },
+    ],
+    solutions: [
+      {
+        title: 'AI Signal Engine 24/5',
+        description: 'AI analyzes 7 technical indicators every 5 minutes and delivers complete signals — Entry, SL, TP, and full reasoning.',
+        benefits: [
+          'Signals based on RSI, MACD, EMA, Bollinger Bands, ATR, Volume',
+          'Every signal includes a clear "Why?" explanation you can understand',
+          'Automated non-stop monitoring following XAUUSD market hours',
+        ],
+        imageAlt: 'AI Signal Engine Dashboard',
+      },
+      {
+        title: 'Structured Trading Plan',
+        description: 'More than just signals — get Daily Bias, fundamental context, and an AI Chat to ask questions anytime.',
+        benefits: [
+          'Daily Bias every 07:00 WIB — market direction and key levels for the day',
+          'Summary of NFP, CPI, and other high-impact fundamental events',
+          'AI Chat to discuss market conditions and strategy at any time',
+        ],
+        imageAlt: 'Trading Plan & Daily Bias',
+      },
+      {
+        title: 'Real-time Notifications',
+        description: 'No need to keep the dashboard open. Signals go straight to your Telegram and WhatsApp in seconds.',
+        benefits: [
+          'Alert in under 30 seconds after AI signal confirmation',
+          'Clean format: Entry, SL, TP, Confidence, and Analysis Reasoning',
+          'Never miss a quality trading setup again',
+        ],
+        imageAlt: 'Telegram & WhatsApp Notifications',
+      },
+    ],
+  },
+
   // ─── Login Page ───────────────────────────────────────────
   login: {
     title: 'Sign in to SINYAL COHIBA',
     subtitle: 'Access trading signals and AI assistant',
     emailLabel: 'Email',
     passwordLabel: 'Password',
-    submitButton: 'Login →',
+    submitButton: 'Sign In',
     loading: 'Processing...',
+    rememberMe: 'Remember me',
+    forgotPassword: 'Forgot password?',
     or: 'or',
     googleButton: 'Sign in with Google',
     googleLoading: 'Redirecting...',

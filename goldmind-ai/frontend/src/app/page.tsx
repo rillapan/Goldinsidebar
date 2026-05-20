@@ -8,6 +8,8 @@ import { ShuffleTestimonials } from '@/components/ui/testimonial-cards';
 import { FeaturesSection } from '@/components/ui/features-section';
 import { PricingSection } from '@/components/ui/pricing-section';
 import { FooterSection } from '@/components/ui/footer-section';
+import { PainSolutionSection } from '@/components/ui/pain-solution-section';
+import { UrgencyBand } from '@/components/ui/urgency-band';
 import { useI18n } from '@/lib/i18n';
 
 
@@ -44,6 +46,9 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+
+      {/* ── PAIN / SOLUTION ── */}
+      <PainSolutionSection />
 
       {/* ── HOW IT WORKS ── */}
       <section id="how-it-works" className="relative py-24 px-4">
@@ -82,6 +87,9 @@ export default function LandingPage() {
 
       {/* ── TESTIMONIALS ── */}
       <ShuffleTestimonials />
+
+      {/* ── URGENCY BAND ── */}
+      <UrgencyBand />
 
       {/* ── PRICING ── */}
       <PricingSection />

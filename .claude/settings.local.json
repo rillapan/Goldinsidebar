@@ -47,7 +47,10 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(dir \"C:\\\\Goldmind\\\\GoldInsidebar\\\\claude\\\\user-main-desaign\\\\intruksi\\\\\")",
-      "PowerShell(python -c \"import websockets; print\\(websockets.__version__\\)\")"
+      "PowerShell(python -c \"import websockets; print\\(websockets.__version__\\)\")",
+      "Bash(~/.claude/skills/gstack/bin/gstack-learnings-log '{\"skill\":\"office-hours\",\"type\":\"operational\",\"key\":\"en-ts-telegram-nav-missing\",\"insight\":\"en.ts navItems has 6 entries vs id.ts 7 — Telegram nav item is missing from English translation. When adding new nav items, must fix this existing mismatch simultaneously. navIcons \\(7\\) and navHrefs \\(7\\) in DashboardShell match id.ts count.\",\"confidence\":10,\"source\":\"observed\",\"files\":[\"goldmind-ai/frontend/src/lib/translations/en.ts\",\"goldmind-ai/frontend/src/components/DashboardShell.tsx\"]}')",
+      "Bash(dir C:\\\\Goldmind\\\\GoldInsidebar\\\\goldmind-ai\\\\frontend\\\\src\\\\app *)",
+      "Bash(npm test *)"
     ]
   }
 }

@@ -25,7 +25,7 @@ const id = {
       { title: 'Cara Kerja', description: 'Bagaimana AI kami menganalisa XAUUSD setiap 5 menit' },
     ],
     aboutLinks2: ['Syarat & Ketentuan', 'Kebijakan Privasi', 'Hubungi Kami'],
-    dropdownNote: 'Dianalisa Claude AI — 7 indikator teknikal real-time.',
+    dropdownNote: 'Dianalisa AI canggih — 7 indikator teknikal real-time.',
     dropdownCta: 'Mulai free trial →',
   },
 
@@ -44,7 +44,7 @@ const id = {
   // ─── Stats Bar ────────────────────────────────────────────
   stats: {
     items: [
-      { label: 'Model AI', value: 'Claude', sub: 'Anthropic AI terbaru' },
+      { label: 'Model AI', value: 'Canggih', sub: 'AI terbaru & terlatih' },
       { label: 'Indikator', value: '7', sub: 'RSI, MACD, EMA, BB, ATR' },
       { label: 'Monitoring', value: '24/5', sub: 'Mengikuti jam pasar forex' },
       { label: 'Notifikasi', value: '<30s', sub: 'WA + Telegram + Dashboard' },
@@ -99,7 +99,7 @@ const id = {
     statsRow: [
       { label: 'Indikator', value: '7+' },
       { label: 'Update', value: '5 menit' },
-      { label: 'AI Model', value: 'Claude' },
+      { label: 'AI Model', value: 'Canggih' },
     ],
   },
 
@@ -156,7 +156,7 @@ const id = {
       'Analytics & history sinyal 30 hari',
       'Win rate & track record transparan',
     ],
-    poweredBy: 'Powered by Anthropic AI',
+    poweredBy: 'Powered by Advanced AI',
     aiModel: 'Model AI terbaru untuk analisa pasar',
     monitoring: 'Monitoring otomatis',
     monitoringDetail: 'analisa XAUUSD setiap 5 menit',
@@ -179,7 +179,7 @@ const id = {
     items: [
       {
         q: 'Berapa akurasi sinyal SINYAL COHIBA?',
-        a: 'SINYAL COHIBA menggunakan model Claude dari Anthropic untuk menganalisa 7 indikator teknikal secara real-time. Kualitas sinyal bergantung pada kondisi pasar. Trading selalu mengandung risiko — gunakan risk management dan jangan trading melebihi kemampuan modal.',
+        a: 'SINYAL COHIBA menggunakan AI canggih untuk menganalisa 7 indikator teknikal secara real-time. Kualitas sinyal bergantung pada kondisi pasar. Trading selalu mengandung risiko — gunakan risk management dan jangan trading melebihi kemampuan modal.',
       },
       {
         q: 'Apakah bisa diakses dari HP?',
@@ -199,7 +199,7 @@ const id = {
   // ─── Final CTA ────────────────────────────────────────────
   cta: {
     title: 'Siap Trading Lebih Cerdas?',
-    subtitle: 'Analisa XAUUSD otomatis berbasis Claude AI — sinyal BUY/SELL langsung ke WA dan Telegram kamu, 24/5.',
+    subtitle: 'Analisa XAUUSD otomatis dengan AI canggih — sinyal BUY/SELL langsung ke WA dan Telegram kamu, 24/5.',
     button: 'Bergabung Sekarang — Rp 299K/bulan',
     note: 'Tanpa kontrak. Cancel kapan saja.',
   },
@@ -219,14 +219,89 @@ const id = {
     legalLinks: ['Syarat & Ketentuan', 'Kebijakan Privasi', 'Hubungi Kami'],
   },
 
+  // ─── Problem / Solution Section ──────────────────────────
+  problemSolution: {
+    header: 'Kenapa Harus Berubah?',
+    title: 'Dari Tantangan ke Solusi',
+    subtitle: 'Market XAUUSD terlalu cepat untuk dinavigasi sendiri. Kami mengerti masalahnya — dan punya solusinya.',
+    problemsLabel: 'Masalah',
+    solutionsLabel: 'Solusi',
+    problemTag: 'Masalah Trader',
+    solutionTag: 'Solusi GoldMind',
+    learnMore: 'Lihat Paket Harga →',
+    problems: [
+      {
+        title: 'Signal Tidak Transparan',
+        description: 'Ikut sinyal mentor yang tidak pernah jelas kapan masuk, kapan keluar, dan alasannya apa.',
+        painPoints: [
+          'Tidak tahu dasar analisa di balik setiap entry',
+          'Info sinyal menyebar lambat — sering sudah terlambat',
+          'Tidak ada pertanggungjawaban ketika sinyal salah',
+        ],
+      },
+      {
+        title: 'Trading Berbasis Emosi',
+        description: 'Tanpa sistem yang jelas, keputusan trading dikendalikan rasa takut, serakah, dan FOMO.',
+        painPoints: [
+          'Entry berdasarkan tebakan, bukan data teknikal',
+          'Cut loss terlambat karena "yakin market pasti balik"',
+          'Profit kecil diambil cepat, floating loss dibiarkan membesar',
+        ],
+      },
+      {
+        title: 'Selalu Ketinggalan Market',
+        description: 'Market XAUUSD bergerak 24/5. Tanpa monitoring otomatis, kamu selalu selangkah di belakang.',
+        painPoints: [
+          'Tidak mungkin pantau chart 24 jam sehari',
+          'Setup bagus terlewat saat tidak di depan screen',
+          'Telat eksekusi berarti entry di harga yang sudah jauh bergerak',
+        ],
+      },
+    ],
+    solutions: [
+      {
+        title: 'AI Signal Engine 24/5',
+        description: 'AI menganalisa 7 indikator teknikal setiap 5 menit dan mengirim sinyal lengkap dengan Entry, SL, TP, dan reasoning.',
+        benefits: [
+          'Signal berbasis RSI, MACD, EMA, Bollinger Bands, ATR, Volume',
+          'Setiap sinyal disertai penjelasan "Kenapa?" yang mudah dipahami',
+          'Monitoring otomatis non-stop mengikuti jam pasar XAUUSD',
+        ],
+        imageAlt: 'AI Signal Engine Dashboard',
+      },
+      {
+        title: 'Trading Plan Terstruktur',
+        description: 'Bukan sekadar sinyal — dapatkan Daily Bias harian, konteks fundamental, dan AI Chat untuk tanya kapan saja.',
+        benefits: [
+          'Daily Bias setiap 07:00 WIB — arah market dan level kunci hari ini',
+          'Rangkuman NFP, CPI, dan event fundamental berdampak tinggi',
+          'AI Chat untuk diskusi kondisi pasar dan strategi kapan saja',
+        ],
+        imageAlt: 'Trading Plan & Daily Bias',
+      },
+      {
+        title: 'Notifikasi Real-time',
+        description: 'Tidak perlu buka dashboard terus. Sinyal langsung masuk ke Telegram dan WhatsApp dalam hitungan detik.',
+        benefits: [
+          'Alert kurang dari 30 detik setelah sinyal terkonfirmasi AI',
+          'Format rapi: Entry, SL, TP, Confidence, dan Alasan Analisa',
+          'Tidak pernah lagi ketinggalan setup trading yang bagus',
+        ],
+        imageAlt: 'Notifikasi Telegram & WhatsApp',
+      },
+    ],
+  },
+
   // ─── Login Page ───────────────────────────────────────────
   login: {
     title: 'Masuk ke SINYAL COHIBA',
     subtitle: 'Akses sinyal trading dan AI assistant',
     emailLabel: 'Email',
     passwordLabel: 'Password',
-    submitButton: 'Login →',
+    submitButton: 'Masuk',
     loading: 'Memproses...',
+    rememberMe: 'Ingat saya',
+    forgotPassword: 'Lupa password?',
     or: 'atau',
     googleButton: 'Masuk dengan Google',
     googleLoading: 'Mengarahkan...',
